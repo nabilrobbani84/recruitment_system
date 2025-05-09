@@ -9,18 +9,20 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
+    public function up()
     {
         Schema::create('interviews', function (Blueprint $table) {
             $table->id();
-            $table->timestamps();
+            $table->foreignId('application_id')->constrained();
+            $table->date('interview_date'); 
+            $table->time('interview_time'); 
+            $table->string('interview_location');
+            $table->enum('status', ['scheduled', 'completed', 'canceled'])->default('scheduled'); 
+            $table->timestamps(); 
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
+    public function down()
     {
         Schema::dropIfExists('interviews');
     }
