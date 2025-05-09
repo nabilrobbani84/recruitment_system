@@ -89,7 +89,7 @@ class ApplicationResource extends Resource
                 TextColumn::make('status')
                     ->label('Status')
                     ->sortable()
-                    ->searchable(),
+                    ->searchable(), 
             ])
             ->filters([
                 // Filters can be added here if necessary
