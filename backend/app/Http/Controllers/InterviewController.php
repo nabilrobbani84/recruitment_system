@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Interview;
 use Illuminate\Http\Request;
 
 class InterviewController extends Controller
@@ -11,15 +12,17 @@ class InterviewController extends Controller
      */
     public function index()
     {
-        //
+        $interviews = Interview::all();
+        return view('interviews.index', compact('interviews'));
     }
+
 
     /**
      * Show the form for creating a new resource.
      */
     public function create()
     {
-        //
+        return view('interviews.create');
     }
 
     /**
@@ -27,31 +30,53 @@ class InterviewController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'application_id' => 'required',
+            'interview_date' => 'required|date',
+            'interview_time' => 'required',
+            'interview_location' => 'required',
+            'status' => 'required',
+        ]);
+
+        Interview::create($request->all());
+        return redirect()->route('interviews.index');
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show($id)
     {
-        //
+        $interview = Interview::findOrFail($id);
+        return view('interviews.show', compact('interview'));
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit($id)
     {
-        //
+        $interview = Interview::findOrFail($id);
+        return view('interviews.edit', compact('interview'));
     }
+
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, $id)
     {
-        //
+        $request->validate([
+            'application_id' => 'required',
+            'interview_date' => 'required|date',
+            'interview_time' => 'required',
+            'interview_location' => 'required',
+            'status' => 'required',
+        ]);
+
+        $interview = Interview::findOrFail($id);
+        $interview->update($request->all());
+        return redirect()->route('interviews.index');
     }
 
     /**
