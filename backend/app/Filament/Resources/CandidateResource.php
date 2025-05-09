@@ -1,4 +1,5 @@
 <?php
+// app/Filament/Resources/CandidateResource.php
 
 namespace App\Filament\Resources;
 
@@ -14,6 +15,7 @@ use Filament\Forms\Components\TextArea;
 use Filament\Forms\Components\FileUpload;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ImageColumn; // Correctly using ImageColumn
+use Illuminate\Support\Facades\Storage; // For file upload handling
 
 class CandidateResource extends Resource
 {
@@ -47,17 +49,9 @@ class CandidateResource extends Resource
                     ->label('CV (PDF or DOCX)')
                     ->nullable()
                     ->acceptedFileTypes(['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'])
-                    ->helperText('Upload the candidate’s CV in PDF or DOCX format'),
-
-                Select::make('status')
-                    ->label('Status')
-                    ->options([
-                        'active' => 'Active',
-                        'inactive' => 'Inactive',
-                    ])
-                    ->required()
-                    ->default('active')
-                    ->helperText('Select whether the candidate is active or inactive'),
+                    ->helperText('Upload the candidate’s CV in PDF or DOCX format')
+                    ->disk('public') // Save the file to the public disk
+                    ->directory('cv'), // Store in the "cv" folder
             ]);
     }
 
@@ -89,12 +83,11 @@ class CandidateResource extends Resource
                     ->searchable()
                     ->alignCenter(),
 
-                // Using ImageColumn correctly for the CV
+                // Correctly using ImageColumn for the CV
                 ImageColumn::make('cv')
                     ->label('CV')
-                    ->image() // Ensure the column is displaying an image (i.e., an image URL)
                     ->sortable()
-                    ->alignCenter(),
+                    ->alignCenter(), // This automatically renders the image URL
 
                 TextColumn::make('status')
                     ->label('Status')
@@ -110,9 +103,7 @@ class CandidateResource extends Resource
                 Tables\Actions\ViewAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
+                Tables\Actions\BulkActionGroup::make([Tables\Actions\DeleteBulkAction::make()]),
             ]);
     }
 
