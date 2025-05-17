@@ -16,7 +16,6 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Columns\DateColumn;
 
 class ApplicationResource extends Resource
 {
@@ -64,46 +63,47 @@ class ApplicationResource extends Resource
     }
 
     public static function table(Table $table): Table
-    {
-        return $table
-            ->columns([
-                TextColumn::make('application_id')
-                    ->label('Application ID')
-                    ->sortable()
-                    ->searchable(),
-                
-                TextColumn::make('candidate_id')
-                    ->label('Candidate ID')
-                    ->sortable()
-                    ->searchable(),
-                
-                TextColumn::make('job_id')
-                    ->label('Job Position')
-                    ->sortable()
-                    ->searchable(),
-                
-                DateColumn::make('application_date')
-                    ->label('Application Date')
-                    ->sortable(),
-                
-                TextColumn::make('status')
-                    ->label('Status')
-                    ->sortable()
-                    ->searchable(), 
-            ])
-            ->filters([
-                // Filters can be added here if necessary
-            ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\ViewAction::make(), // You can add a View Action
-            ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
-            ]);
-    }
+{
+    return $table
+        ->columns([
+            TextColumn::make('application_id')
+                ->label('Application ID')
+                ->sortable()
+                ->searchable(),
+            
+            TextColumn::make('candidate_id')
+                ->label('Candidate ID')
+                ->sortable()
+                ->searchable(),
+            
+            TextColumn::make('job_id')
+                ->label('Job Position')
+                ->sortable()
+                ->searchable(),
+            
+            TextColumn::make('application_date') // Use TextColumn for dates
+                ->label('Application Date')
+                ->sortable()
+                ->formatStateUsing(fn ($state) => \Carbon\Carbon::parse($state)->toFormattedDateString()), // Format the date nicely
+            
+            TextColumn::make('status')
+                ->label('Status')
+                ->sortable()
+                ->searchable(), 
+        ])
+        ->filters([
+            // Filters can be added here if necessary
+        ])
+        ->actions([
+            Tables\Actions\EditAction::make(),
+            Tables\Actions\ViewAction::make(),
+        ])
+        ->bulkActions([
+            Tables\Actions\BulkActionGroup::make([
+                Tables\Actions\DeleteBulkAction::make(),
+            ]),
+        ]);
+}
 
     public static function getRelations(): array
     {
