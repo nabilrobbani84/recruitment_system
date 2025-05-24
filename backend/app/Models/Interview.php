@@ -14,6 +14,12 @@ class Interview extends Model
         'interview_date',
         'interview_time',
         'interview_location',
-        'status'
+        'status',
     ];
+
+    // Define relationship to Application model
+    public function application()
+    {
+        return $this->belongsTo(Application::class, 'application_id');
+    }
 }
