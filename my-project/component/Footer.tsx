@@ -1,15 +1,17 @@
+"use client";
+
 export default function Footer() {
   return (
-    <footer className="bg-dark-blue text-white py-10">
-      <div className="max-w-7xl mx-auto px-6">
-        {/* Logo dan Tautan Utama */}
-        <div className="flex justify-between items-center mb-8">
-          <div className="flex items-center space-x-4">
+    <footer className="bg-[#1e1e2f] text-white py-16">
+      <div className="max-w-screen-xl mx-auto px-6">
+        {/* Logo and Main Links */}
+        <div className="flex flex-col md:flex-row justify-between items-center mb-12">
+          <div className="flex items-center space-x-4 mb-8 md:mb-0">
             <img src="/logo.png" alt="RecruitEasy Logo" className="h-12" />
             <p className="font-semibold text-lg">RecruitEasy</p>
           </div>
 
-          {/* Media Sosial */}
+          {/* Social Media Links */}
           <div className="flex space-x-6">
             <a href="#" className="hover:text-green-500">
               <i className="fab fa-facebook-f"></i>
@@ -29,7 +31,7 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Links */}
+        {/* Navigation Links */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
           <div>
             <h3 className="font-semibold text-lg mb-4">Untuk Pencari Kerja</h3>
@@ -76,5 +78,5 @@ export default function Footer() {
         </div>
       </div>
     </footer>
-  )
+  );
 }

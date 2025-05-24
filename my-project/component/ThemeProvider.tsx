@@ -1,4 +1,4 @@
-"use client"; // Menandakan file ini hanya berjalan di client-side
+"use client"; 
 
 import { createContext, useState, useContext, ReactNode } from "react";
 
@@ -31,3 +31,4 @@ const ThemeProvider = ({ children }: ThemeProviderProps) => {
 export const useTheme = () => useContext(ThemeContext);
 
 export default ThemeProvider;
+  

@@ -1,95 +1,43 @@
-export default function Home() {
-	return (
-		<div>
-			<h1 className="text-xl font-bold hover:text-green-400">wkwkw</h1>
+import React from 'react';
+import Header from '../component/Header';  
+import Footer from '../component/Footer'; 
+import JobList from '../component/JobList';
+import CompanyMessage from '../component/CompanyMessage';
+import About from './about/page';
+const Page = () => {
+  return (
+    <>
+      {/* Header Section */}
+      <Header />
 
-			<div className="overflow-x-auto">
-				<table className="min-w-full divide-y-2 divide-gray-200">
-					<thead className="ltr:text-left rtl:text-right">
-						<tr className="*:font-medium *:text-gray-900">
-							<th className="px-3 py-2 whitespace-nowrap">
-								Name
-							</th>
-							<th className="px-3 py-2 whitespace-nowrap">DoB</th>
-							<th className="px-3 py-2 whitespace-nowrap">
-								Role
-							</th>
-							<th className="px-3 py-2 whitespace-nowrap">
-								Salary
-							</th>
-						</tr>
-					</thead>
+      {/* Main Content */}
+      <main className="bg-gray-100 min-h-screen py-12 px-6">
+        <div className="container mx-auto">
+          <h1 className="text-4xl font-bold text-center mb-8">Welcome to RecruitEasy</h1>
 
-					<tbody className="divide-y divide-gray-200">
-						<tr className="*:text-gray-900 *:first:font-medium">
-							<td className="px-3 py-2 whitespace-nowrap">
-								Nandor the Relentless
-							</td>
-							<td className="px-3 py-2 whitespace-nowrap">
-								04/06/1262
-							</td>
-							<td className="px-3 py-2 whitespace-nowrap">
-								Vampire Warrior
-							</td>
-							<td className="px-3 py-2 whitespace-nowrap">$0</td>
-						</tr>
+          <p className="text-lg text-center mb-12">
+            Find the best job opportunities and start your career journey today!
+          </p>
 
-						<tr className="*:text-gray-900 *:first:font-medium">
-							<td className="px-3 py-2 whitespace-nowrap">
-								Laszlo Cravensworth
-							</td>
-							<td className="px-3 py-2 whitespace-nowrap">
-								19/10/1678
-							</td>
-							<td className="px-3 py-2 whitespace-nowrap">
-								Vampire Gentleman
-							</td>
-							<td className="px-3 py-2 whitespace-nowrap">$0</td>
-						</tr>
+          {/* Job Listings */}
+          <section>
+            <h2 className="text-2xl font-semibold mb-6">Job Openings</h2>
+            <JobList />
+          </section>
 
-						<tr className="*:text-gray-900 *:first:font-medium">
-							<td className="px-3 py-2 whitespace-nowrap">
-								Nadja
-							</td>
-							<td className="px-3 py-2 whitespace-nowrap">
-								15/03/1593
-							</td>
-							<td className="px-3 py-2 whitespace-nowrap">
-								Vampire Seductress
-							</td>
-							<td className="px-3 py-2 whitespace-nowrap">$0</td>
-						</tr>
+          {/* Company Info/Spotlight */}
+          <section className="mt-12">
+            <h2 className="text-2xl font-semibold mb-6">Company Spotlight</h2>
+            <CompanyMessage />
+          </section>
 
-						<tr className="*:text-gray-900 *:first:font-medium">
-							<td className="px-3 py-2 whitespace-nowrap">
-								Colin Robinson
-							</td>
-							<td className="px-3 py-2 whitespace-nowrap">
-								01/09/1971
-							</td>
-							<td className="px-3 py-2 whitespace-nowrap">
-								Energy Vampire
-							</td>
-							<td className="px-3 py-2 whitespace-nowrap">
-								$53,000
-							</td>
-						</tr>
+        </div>
+      </main>
+      <About />
+      {/* Footer Section */}
+      <Footer />
+    </>
+  );
+};
 
-						<tr className="*:text-gray-900 *:first:font-medium">
-							<td className="px-3 py-2 whitespace-nowrap">
-								Guillermo de la Cruz
-							</td>
-							<td className="px-3 py-2 whitespace-nowrap">
-								18/11/1991
-							</td>
-							<td className="px-3 py-2 whitespace-nowrap">
-								Familiar/Vampire Hunter
-							</td>
-							<td className="px-3 py-2 whitespace-nowrap">$0</td>
-						</tr>
-					</tbody>
-				</table>
-			</div>
-		</div>
-	);
-}
+export default Page;

@@ -1,11 +1,11 @@
-"use client"; // This ensures that the component is a client-side component
+"use client";  
 
-import { useState } from 'react'
-import { useRouter } from 'next/router'
+import { useState } from 'react';
+import { useRouter } from 'next/navigation'; 
 
 export default function Header() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const router = useRouter()
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const router = useRouter(); // Now correctly using useRouter from next/navigation
 
   return (
     <header className="bg-indigo-900 text-white py-4">
@@ -63,5 +63,5 @@ export default function Header() {
         </div>
       )}
     </header>
-  )
+  );
 }

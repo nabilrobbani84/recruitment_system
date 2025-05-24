@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react'
-import { getJobs } from '../../utils/api'
+"use client";
+import {useState } from 'react'
 import Link from 'next/link'
 
 type Job = {
@@ -17,11 +17,19 @@ const JobsPage = () => {
   useEffect(() => {
     const fetchJobs = async () => {
       try {
-        const data = await getJobs()
+        // Simulated API response (mock data)
+        const data: Job[] = [
+          { id: 1, title: "Software Developer", company: "ABC Corp", location: "New York" },
+          { id: 2, title: "UI/UX Designer", company: "XYZ Ltd", location: "San Francisco" }
+        ]
         setJobs(data)
         setLoading(false)
-      } catch (err) {
-        setError('Failed to load jobs. Please try again later.')
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          setError(err.message) // Error handling with proper message
+        } else {
+          setError('An unknown error occurred')
+        }
         setLoading(false)
       }
     }

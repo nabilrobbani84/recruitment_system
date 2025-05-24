@@ -1,42 +1,43 @@
-import { useState } from 'react'
+"use client";  // Marks this as a client component
+
+import { useState } from 'react';
 
 const JobApplicationForm = () => {
-  const [name, setName] = useState('')
-  const [email, setEmail] = useState('')
-  const [cv, setCv] = useState<File | null>(null)
-  const [message, setMessage] = useState('')
-  const [error, setError] = useState('')
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [cv, setCv] = useState<File | null>(null);
+  const [message, setMessage] = useState('');
+  const [error, setError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsSubmitting(true)
+    e.preventDefault();
+    setIsSubmitting(true);
 
     // Validate fields
     if (!name || !email || !cv || !message) {
-      setError('Please fill in all fields and upload your CV.')
-      setIsSubmitting(false)
-      return
+      setError('Please fill in all fields and upload your CV.');
+      setIsSubmitting(false);
+      return;
     }
 
-    const formData = new FormData()
-    formData.append('name', name)
-    formData.append('email', email)
-    formData.append('cv', cv!)
-    formData.append('message', message)
+    const formData = new FormData();
+    formData.append('name', name);
+    formData.append('email', email);
+    formData.append('cv', cv!);
+    formData.append('message', message);
 
     try {
       // Simulate API request
       setTimeout(() => {
-        setIsSubmitting(false)
-        // You can replace this with actual API request
-        alert('Application submitted successfully!')
-      }, 1500)
-    } catch (err) {
-      setError('Failed to submit your application. Please try again later.')
-      setIsSubmitting(false)
+        setIsSubmitting(false);
+        alert('Application submitted successfully!');
+      }, 1500);
+    } catch {
+      setError('Failed to submit your application. Please try again later.');
+      setIsSubmitting(false);
     }
-  }
+  };
 
   return (
     <div className="max-w-7xl mx-auto px-6 py-16">
@@ -104,7 +105,8 @@ const JobApplicationForm = () => {
         </button>
       </form>
     </div>
-  )
-}
+  );
+};
 
-export default JobApplicationForm
+export default JobApplicationForm;
+  

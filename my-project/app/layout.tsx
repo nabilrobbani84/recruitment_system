@@ -11,7 +11,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
       {/* Menyediakan struktur html dan body */}
       <html lang="en">
         <head>
-          {/* Head content seperti meta tags bisa ditempatkan di sini */}
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
         </head>
         <body>
           <ProviderRedux>
