@@ -2,12 +2,21 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation'; 
-import { FaRegComment, FaBell } from 'react-icons/fa'; // Import ikon chat dan bell dari react-icons
+import { FaRegComment, FaBell, FaGlobe } from 'react-icons/fa'; // Import ikon chat, bell, dan globe dari react-icons
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false); // State untuk mengontrol dropdown notifikasi
+  const [isLanguageDropdownOpen, setIsLanguageDropdownOpen] = useState(false); // State untuk mengontrol dropdown bahasa
+  const [selectedLanguage, setSelectedLanguage] = useState('ID'); // State untuk bahasa yang dipilih
   const router = useRouter(); 
+
+  // Fungsi untuk mengubah bahasa
+  const handleLanguageChange = (language) => {
+    setSelectedLanguage(language);
+    setIsLanguageDropdownOpen(false); // Menutup dropdown setelah memilih bahasa
+    // Anda bisa menambahkan logika untuk mengganti bahasa aplikasi di sini
+  };
 
   return (
     <header className="bg-indigo-900 text-white py-4">
@@ -73,6 +82,38 @@ export default function Header() {
             </div>
           )}
         </div>
+
+        {/* Language Selection Dropdown */}
+        <div className="relative hidden md:flex">
+          <button 
+            onClick={() => setIsLanguageDropdownOpen(!isLanguageDropdownOpen)} // Toggle language dropdown
+            className="flex items-center space-x-2 hover:text-green-500"
+          >
+            <FaGlobe className="w-6 h-6 text-white" /> {/* Ikon Globe */}
+            <span className="ml-2 text-white">{selectedLanguage === 'ID' ? 'Bahasa' : 'English'}</span>
+          </button>
+
+          {/* Language Dropdown */}
+          {isLanguageDropdownOpen && (
+            <div className="absolute top-10 right-0 bg-indigo-800 text-white rounded-lg shadow-lg w-40 p-4">
+              <ul className="space-y-2">
+                <li 
+                  className="hover:bg-indigo-700 p-2 rounded cursor-pointer"
+                  onClick={() => handleLanguageChange('ID')}
+                >
+                  Bahasa Indonesia
+                </li>
+                <li 
+                  className="hover:bg-indigo-700 p-2 rounded cursor-pointer"
+                  onClick={() => handleLanguageChange('EN')}
+                >
+                  English
+                </li>
+              </ul>
+            </div>
+          )}
+        </div>
+
       </div>
 
       {/* Mobile Menu */}
