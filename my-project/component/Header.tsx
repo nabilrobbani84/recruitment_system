@@ -26,7 +26,7 @@ export default function Header() {
         {/* Login Button */}
         <div className="hidden md:flex">
           <button 
-            onClick={() => router.push('/login')}
+            onClick={() => router.push('/Login')}
             className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
           >
             Login
@@ -35,11 +35,11 @@ export default function Header() {
 
         {/* Mobile Menu Button */}
         <div className="md:hidden">
-          <button onClick={() => setIsMenuOpen(!isMenuOpen)}>
-            <svg className="w-6 h-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-          </button>
+            <button onClick={() => setIsMenuOpen(!isMenuOpen)}>
+              <svg className="w-6 h-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </button>
         </div>
       </div>
 
@@ -53,7 +53,7 @@ export default function Header() {
             <a href="/help" className="block hover:text-green-500">Help Center</a>
             <div className="mt-4">
               <button 
-                onClick={() => router.push('/login')}
+                onClick={() => router.push('/Login')}
                 className="w-full py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
               >
                 Login
