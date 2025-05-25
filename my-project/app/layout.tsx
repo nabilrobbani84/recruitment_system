@@ -16,10 +16,6 @@ const Layout = ({ children }: { children: ReactNode }) => {
         <body>
           <ProviderRedux>
             <ThemeProvider>
-              {/* Display messages */}
-              <JobMessage />
-              <CompanyMessage />
-              <UserMessage />
 
               {/* Main Content */}
               <div className="min-h-screen bg-gray-50">
