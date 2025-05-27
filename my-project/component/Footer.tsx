@@ -5,6 +5,11 @@ import Link from 'next/link';
 export default function Footer() {
   return (
     <footer className="bg-[#1e1e2f] text-white pt-16 pb-8 relative">
+      {/* Background Image */}
+      <div className="absolute inset-0 -z-10">
+        <img src="/footer.png" alt="Footer Background" className="w-full h-full object-cover opacity-20" />
+      </div>
+
       {/* Main Grid: Logo, Nav Columns, Contact */}
       <div className="max-w-screen-xl mx-auto px-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-8">
         {/* Logo & Social Icons */}
@@ -73,6 +78,16 @@ export default function Footer() {
           <p className="text-sm mt-2 flex items-center"><i className="far fa-clock mr-2"></i>Mon - Sat: 10:00 AM - 4:00 PM</p>
           <p className="text-sm mt-2 flex items-center"><i className="fas fa-phone mr-2"></i>+6285777659082</p>
         </div>
+      </div>
+
+      {/* Image on the Right Side */}
+      <div className="absolute right-0 top-1/2 transform -translate-y-1/2 pr-4">
+        <img src="/footer.png" alt="RecruitEasy Footer Graphic Right" className="h-[200px] w-auto" />
+      </div>
+
+      {/* Image on the Left Side */}
+      <div className="absolute left-0 top-1/2 transform -translate-y-1/2 pl-4">
+        <img src="/footer2.png" alt="RecruitEasy Footer Graphic Left" className="h-[200px] w-auto" />
       </div>
 
       {/* Scroll to Top Button */}
