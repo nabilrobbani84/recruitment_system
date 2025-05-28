@@ -1,9 +1,7 @@
 import { ReactNode } from "react";
 import ProviderRedux from "./provider";
 import ThemeProvider from "../component/ThemeProvider";
-import JobMessage from "./JobMessage";
-import CompanyMessage from "../component/CompanyMessage";
-import UserMessage from "./UserMessage";
+
 import "./globals.css";
 const Layout = ({ children }: { children: ReactNode }) => {
   return (
