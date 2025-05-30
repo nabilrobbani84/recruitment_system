@@ -1,44 +1,54 @@
-// app/(auth)/login/page.tsx
-import { useState } from 'react'
-import firebase from '../../app/page';
-import { useRouter } from 'next/navigation';
+import React, { useState } from "react";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../lib/firebase";
+import { useRouter } from "next/navigation";
 
 const Login = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await firebase.auth().signInWithEmailAndPassword(email, password);
-      router.push('/dashboard');
-    } catch (err) {
-      setError('Login failed. Please check your credentials.');
+      await signInWithEmailAndPassword(auth, email, password);
+      router.push("/dashboard"); // Redirect to dashboard or home
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message); // Use the error message from the caught error
+      } else {
+        setError("An unknown error occurred.");
+      }
     }
   };
 
   return (
-    <div>
-      <h2>Login</h2>
-      <form onSubmit={handleLogin}>
+    <div className="max-w-md mx-auto mt-10">
+      <h2 className="text-2xl font-bold">Login</h2>
+      {error && <p className="text-red-500">{error}</p>}
+      <form onSubmit={handleLogin} className="space-y-4">
         <input
           type="email"
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          className="w-full p-2 border border-gray-300 rounded"
         />
         <input
           type="password"
           placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          className="w-full p-2 border border-gray-300 rounded"
         />
-        <button type="submit">Login</button>
+        <button type="submit" className="w-full bg-blue-500 text-white p-2 rounded">
+          Login
+        </button>
       </form>
-      {error && <p>{error}</p>}
-      <a href="/auth/forgot-password">Forgot Password?</a>
+      <p className="text-center mt-4">
+        <a href="/auth/forgot-password" className="text-blue-500">Forgot password?</a>
+      </p>
     </div>
   );
 };
