@@ -12,8 +12,13 @@ const ForgotPassword = () => {
     try {
       await sendPasswordResetEmail(auth, email);
       setMessage("Password reset email sent! Check your inbox.");
-    } catch (err: any) {
-      setError("Failed to send reset email. Please try again.");
+    } catch (err: unknown) {
+      // Handling the error by checking if it is an instance of Error
+      if (err instanceof Error) {
+        setError(err.message); // Display the error message if it's an instance of Error
+      } else {
+        setError("Failed to send reset email. Please try again.");
+      }
     }
   };
 
@@ -39,4 +44,3 @@ const ForgotPassword = () => {
 };
 
 export default ForgotPassword;
-
