@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Interview;
 use Illuminate\Http\Request;
 
-class InterviewController extends Controller
+class InterviewController 
 {
     /**
      * Display a listing of the resource.
