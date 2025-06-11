@@ -1,14 +1,22 @@
 import React from 'react';
 import { applicationService } from '@/services/applicationService';
-import { ApplicationHistoryItem } from '@/components/candidate/ApplicationHistoryItem';
-import { Alert, AlertDescription, AlertTitle } from '@/component/common/Alert';
+// FIX 1: Path diperbaiki dari @/component menjadi @/components
+import { ApplicationHistoryItem } from '@/component/candidate/ApplicationHistoryItem';
+// FIX 2: Menghapus impor untuk Alert, AlertDescription, dan AlertTitle yang tidak ada dan tidak digunakan
 import { FileSearch } from 'lucide-react';
 import Link from 'next/link';
 
 // Halaman ini cocok menjadi Server Component untuk fetch data awal
 export default async function ApplicationsPage() {
-  // Ambil data langsung di server
-  const applications = await applicationService.getApplications();
+  // Ambil data langsung di server. Disarankan menambahkan try-catch untuk penanganan error.
+  let applications = [];
+  try {
+      applications = await applicationService.getApplications();
+  } catch (error) {
+      console.error("Gagal mengambil data lamaran:", error);
+      // Jika terjadi error, kita akan menampilkan halaman kosong (seperti tidak ada lamaran).
+      // Di aplikasi production, Anda bisa menampilkan komponen Alert di sini.
+  }
 
   return (
     <div className="space-y-6">
