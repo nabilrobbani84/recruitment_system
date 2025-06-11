@@ -1,7 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation'; // Hook ini harus digunakan di Client Component
-import { Home, Briefcase, Bookmark, User, Settings, LogOut } from 'lucide-react'; // Contoh ikon dari lucide-react
+     // Contoh ikon dari lucide-react
 
 'use client';
 
