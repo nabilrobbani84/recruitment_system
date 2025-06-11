@@ -1,9 +1,10 @@
+'use client';
+
 import React from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation'; // Hook ini harus digunakan di Client Component
-     // Contoh ikon dari lucide-react
-
-'use client';
+import { usePathname } from 'next/navigation';
+// FIX 1: Menambahkan impor ikon yang dibutuhkan
+import { User, Briefcase, Bookmark, Settings, LogOut } from 'lucide-react';
 
 const SidebarNav = () => {
   const pathname = usePathname();
@@ -15,7 +16,8 @@ const SidebarNav = () => {
     { href: '/settings', icon: <Settings size={20} />, label: 'Pengaturan Akun' },
   ];
 
-  const isActive = (href: string) => pathname === href;
+  // FIX 2: Logika isActive diperbaiki untuk menangani sub-rute
+  const isActive = (href: string) => pathname.startsWith(href);
 
   return (
     <aside className="w-64 flex-shrink-0 bg-white border-r border-gray-200 flex flex-col">
@@ -61,16 +63,13 @@ export default function DashboardCandidateLayout({
 }) {
   return (
     <div className="flex h-screen bg-gray-50 overflow-hidden">
-      {/* Sidebar untuk Desktop */}
       <div className="hidden md:flex">
         <SidebarNav />
       </div>
 
       <main className="flex-1 overflow-y-auto">
-        {/* Header untuk Mobile dengan tombol menu */}
         <header className="md:hidden sticky top-0 z-10 flex items-center justify-between h-16 px-4 bg-white border-b border-gray-200">
             <h1 className="text-lg font-bold text-blue-600">Dashboard</h1>
-            {/* Tombol untuk membuka mobile menu (drawer) */}
             <button className="p-2">
                 {/* Menu Icon */}
             </button>
@@ -82,4 +81,4 @@ export default function DashboardCandidateLayout({
       </main>
     </div>
   );
-}   
+}
