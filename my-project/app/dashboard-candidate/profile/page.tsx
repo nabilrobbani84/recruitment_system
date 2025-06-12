@@ -1,20 +1,19 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+// FIX 1: Path impor diperbaiki ke @/components
 import { ProfileForm } from '@/component/candidate/ProfileForm';
 import { ExperienceCard } from '@/component/candidate/ExperienceCard';
 import { EducationCard } from '@/component/candidate/EducationCard';
 import { CVUpload } from '@/component/candidate/CVUpload';
 import { Button } from '@/component/common/Button';
-import { profileService } from '@/services/profileService'; // Asumsi service ada
-import { UserProfile } from '@/lib/types'; // Asumsi tipe data ada
+import { profileService } from '@/services/profileService';
+// FIX 2: Impor tipe dari sumber terpusat
+import { UserProfile, Experience, Education } from '@/lib/types';
 import { Plus } from 'lucide-react';
 
-// Tipe data dummy untuk contoh
-interface Experience { id: number; role: string; company: string; period: string; }
-interface Education { id: number; institution: string; degree: string; period: string; }
-
 const ProfilePage = () => {
+  // FIX 3: Menggunakan tipe data yang sudah diimpor untuk state
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [experiences, setExperiences] = useState<Experience[]>([]);
   const [educations, setEducations] = useState<Education[]>([]);
@@ -47,7 +46,7 @@ const ProfilePage = () => {
   }
   
   if (!profile) {
-    return <div className="text-center p-10 text-red-500">Gagal memuat profil.</div>;
+    return <div className="text-center p-10 text-red-500">Gagal memuat profil. Silakan coba lagi nanti.</div>;
   }
 
   return (
@@ -73,7 +72,7 @@ const ProfilePage = () => {
       <section className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold text-gray-800">Pengalaman Kerja</h2>
-          <Button variant="primary" size="sm">
+          <Button>
             <Plus size={16} className="mr-2"/> Tambah Pengalaman
           </Button>
         </div>
@@ -86,20 +85,20 @@ const ProfilePage = () => {
         </div>
       </section>
       
-       {/* Section Pendidikan */}
-       <section className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+        {/* Section Pendidikan */}
+        <section className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold text-gray-800">Pendidikan</h2>
-          <Button variant="primary" size="sm">
+          <Button>
              <Plus size={16} className="mr-2"/> Tambah Pendidikan
           </Button>
         </div>
         <div className="space-y-4">
            {educations.length > 0 ? (
-            educations.map(edu => <EducationCard key={edu.id} education={edu} />)
-          ) : (
-            <p className="text-gray-500 italic">Anda belum menambahkan riwayat pendidikan.</p>
-          )}
+             educations.map(edu => <EducationCard key={edu.id} education={edu} />)
+           ) : (
+             <p className="text-gray-500 italic">Anda belum menambahkan riwayat pendidikan.</p>
+           )}
         </div>
       </section>
 
