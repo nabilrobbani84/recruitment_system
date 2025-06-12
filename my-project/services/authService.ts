@@ -1,45 +1,58 @@
-import axios from 'axios';
-import { auth } from '../app/lib/firebase';
+import axiosInstance from '../lib/axiosInstance'; 
 
-const API_URL = 'https://your-backend-api.com/auth'; // Replace with your actual backend URL
+// Definisikan tipe data untuk request dan response jika diperlukan
+interface LoginCredentials {
+  email: string;
+  password_hash: string; // Sesuaikan dengan field yang diharapkan backend
+}
 
-// Login service
-export const loginUser = async (email: string, password: string) => {
-  try {
-    const response = await axios.post(`${API_URL}/login`, { email, password });
-    return response.data; // Returning response data (e.g., user info, token)
-  } catch (error: unknown) {
-    if (error instanceof Error) {
-      // TypeScript now knows that error is an instance of Error
-      throw new Error(error.message || 'Login failed');
-    }
-    // If error isn't an instance of Error, just throw a generic message
-    throw new Error('Login failed');
-  }
-};
+interface RegisterData {
+  full_name: string;
+  email: string;
+  password_hash: string;
+  role: 'candidate' | 'employer'; // Sesuaikan
+}
 
-// Register service
-export const registerUser = async (email: string, password: string) => {
-  try {
-    const response = await axios.post(`${API_URL}/register`, { email, password });
-    return response.data;
-  } catch (error: unknown) {
-    if (error instanceof Error) {
-      throw new Error(error.message || 'Registration failed');
-    }
-    throw new Error('Registration failed');
-  }
-};
+interface AuthResponse {
+  token: string;
+  user: {
+    id: string;
+    full_name: string;
+    email: string;
+    role: 'candidate' | 'employer';
+  };
+}
+export const authService = {
+  login: async (credentials: LoginCredentials): Promise<AuthResponse> => {
+    console.log('Simulating login:', credentials);
+    await new Promise(resolve => setTimeout(resolve, 500));
+    if (credentials.email === "gagal@mail.com") throw new Error("Email atau password salah (simulasi).");
+    return {
+      token: 'dummy-auth-token-12345',
+      user: {
+        id: 'user-1',
+        full_name: credentials.email.split('@')[0],
+        email: credentials.email,
+        role: credentials.email.includes('employer') ? 'employer' : 'candidate',
+      },
+    };
+  },
 
-// Logout service
-export const logoutUser = async () => {
-  try {
-    await auth.signOut(); // Firebase sign out
-    // Additional backend sign out logic can go here
-  } catch (error: unknown) {
-    if (error instanceof Error) {
-      throw new Error(error.message || 'Logout failed');
-    }
-    throw new Error('Logout failed');
-  }
+  register: async (data: RegisterData): Promise<void> => {
+    // await axiosInstance.post('/auth/register', data);
+    console.log('Simulating register:', data);
+    await new Promise(resolve => setTimeout(resolve, 500));
+    if (data.email === "sudahada@mail.com") throw new Error("Email sudah terdaftar (simulasi).");
+  },
+
+  forgotPassword: async (data: { email: string }): Promise<void> => {
+    console.log('Simulating forgot password:', data);
+    await new Promise(resolve => setTimeout(resolve, 500));
+  },
+
+  resetPassword: async (data: { token: string; new_password_hash: string }): Promise<void> => {
+    console.log('Simulating reset password for token:', data.token);
+    await new Promise(resolve => setTimeout(resolve, 500));
+    if (data.token === "invalid-token") throw new Error("Token tidak valid atau kedaluwarsa (simulasi).");
+  },
 };
