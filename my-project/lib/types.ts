@@ -1,3 +1,5 @@
+// src/lib/types.ts
+
 // Tipe untuk Pekerjaan
 export interface Job {
   id: string;
@@ -62,3 +64,25 @@ export interface Education {
   startDate: string;
   endDate?: string;
 }
+
+// --- PENAMBAHAN UNTUK MEMPERBAIKI ERROR ---
+
+/**
+ * Tipe data dasar untuk sebuah Keahlian (Skill).
+ * Digunakan untuk merepresentasikan keahlian yang dimiliki oleh seorang kandidat.
+ */
+export interface Skill {
+  id: string | number; // ID bisa string atau number tergantung implementasi backend
+  name: string;
+}
+
+/**
+ * Tipe data untuk saran Keahlian (Skill Suggestion) pada fitur pencarian.
+ * Biasanya menyertakan data tambahan seperti jumlah pekerjaan yang relevan.
+ */
+export interface SkillSuggestion {
+  id: string | number;
+  name: string;
+  jobCount: number; // Jumlah pekerjaan yang membutuhkan keahlian ini
+}
+// --- AKHIR PENAMBAHAN ---
