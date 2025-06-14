@@ -1,50 +1,84 @@
-import axios from 'axios';
+import apiClient from '@/lib/apiClient';
+import { Job, JobFilterParams } from '@/lib/types';
 
-const API_URL = 'https://your-backend-api.com/jobs'; // Replace with your actual backend URL
+class JobService {
+  /**
+   * Mengambil daftar pekerjaan dengan filter dan paginasi.
+   * @param params - Objek filter (query, location, dll).
+   * @returns Promise<Job[]> - Daftar pekerjaan.
+   */
+  async getJobs(params: JobFilterParams): Promise<{ data: Job[], totalPages: number }> {
+    try {
+      const response = await apiClient.get('/jobs', { params });
+      // Asumsi backend mengembalikan data dan info paginasi di header atau body
+      return {
+        data: response.data.jobs,
+        totalPages: response.data.totalPages,
+      };
+    } catch (error) {
+      console.error('Error fetching jobs:', error);
+      throw new Error('Gagal mengambil data pekerjaan.');
+    }
+  }
 
-// Define the JobData type
-interface JobData {
-  title: string;
-  description: string;
-  location: string;
-  // Add other job-related fields here
+  /**
+   * Mengambil detail satu pekerjaan berdasarkan ID.
+   * @param id - ID pekerjaan.
+   * @returns Promise<Job> - Detail pekerjaan.
+   */
+  async getJobById(id: string): Promise<Job> {
+    try {
+      const response = await apiClient.get(`/jobs/${id}`);
+      return response.data;
+    } catch (error) {
+      console.error(`Error fetching job with id ${id}:`, error);
+      throw new Error('Gagal mengambil detail pekerjaan.');
+    }
+  }
+  
+  /**
+   * Mengambil daftar pekerjaan yang disimpan oleh pengguna.
+   * @returns Promise<Job[]> - Daftar pekerjaan yang disimpan.
+   */
+  async getSavedJobs(): Promise<Job[]> {
+    try {
+      // Endpoint ini diasumsikan ada di backend dan terproteksi
+      const response = await apiClient.get('/candidate/saved-jobs');
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching saved jobs:', error);
+      throw new Error('Gagal mengambil pekerjaan yang disimpan.');
+    }
+  }
+
+  /**
+   * Menyimpan pekerjaan ke daftar pengguna.
+   * @param jobId - ID pekerjaan yang akan disimpan.
+   * @returns Promise<void>
+   */
+  async saveJob(jobId: string): Promise<void> {
+    try {
+      await apiClient.post('/candidate/saved-jobs', { jobId });
+    } catch (error) {
+      console.error(`Error saving job ${jobId}:`, error);
+      throw new Error('Gagal menyimpan pekerjaan.');
+    }
+  }
+
+  /**
+   * Menghapus pekerjaan dari daftar simpanan pengguna.
+   * @param jobId - ID pekerjaan yang akan dihapus.
+   * @returns Promise<void>
+   */
+  async unsaveJob(jobId: string): Promise<void> {
+    try {
+      await apiClient.delete(`/candidate/saved-jobs/${jobId}`);
+    } catch (error) {
+      console.error(`Error unsaving job ${jobId}:`, error);
+      throw new Error('Gagal menghapus pekerjaan dari daftar simpanan.');
+    }
+  }
 }
 
-// Fetch all job listings
-export const fetchJobs = async () => {
-  try {
-    const response = await axios.get(`${API_URL}/`);
-    return response.data; // Returning the list of jobs
-  } catch (error: unknown) {
-    if (error instanceof Error) {
-      throw new Error(error.message || 'Failed to fetch jobs');
-    }
-    throw new Error('Failed to fetch jobs');
-  }
-};
-
-// Fetch a specific job by ID
-export const fetchJobById = async (jobId: string) => {
-  try {
-    const response = await axios.get(`${API_URL}/${jobId}`);
-    return response.data; // Returning the specific job details
-  } catch (error: unknown) {
-    if (error instanceof Error) {
-      throw new Error(error.message || 'Failed to fetch job details');
-    }
-    throw new Error('Failed to fetch job details');
-  }
-};
-
-// Create a new job
-export const createJob = async (jobData: JobData) => {
-  try {
-    const response = await axios.post(`${API_URL}/create`, jobData);
-    return response.data; // Returning created job details
-  } catch (error: unknown) {
-    if (error instanceof Error) {
-      throw new Error(error.message || 'Failed to create job');
-    }
-    throw new Error('Failed to create job');
-  }
-};
+// Ekspor sebagai instance agar menjadi singleton (hanya dibuat sekali)
+export const jobService = new JobService();
