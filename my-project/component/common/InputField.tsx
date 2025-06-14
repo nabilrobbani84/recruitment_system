@@ -1,7 +1,9 @@
+// src/components/common/InputField.tsx
+
 import React, { InputHTMLAttributes } from 'react';
 import { cva } from 'class-variance-authority';
 
-// --- Definisi Varian Input ---
+// --- Definisi Varian Input (Tidak ada perubahan) ---
 const inputStyles = cva(
   'flex h-10 w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
   {
@@ -17,7 +19,8 @@ const inputStyles = cva(
 export interface InputFieldProps extends InputHTMLAttributes<HTMLInputElement> {
   label: string;
   error?: string;
-  icon?: React.ReactNode;
+  // FIX: Tipe diubah menjadi lebih spesifik untuk memastikan elemen bisa menerima className.
+  icon?: React.ReactElement<{ className?: string }>;
   containerClassName?: string;
 }
 
@@ -27,21 +30,24 @@ const InputField = React.forwardRef<HTMLInputElement, InputFieldProps>(
     const inputId = id || props.name; // Gunakan id atau name untuk htmlFor
 
     return (
-      <div className={`w-full ${containerClassName}`}>
+      <div className={`w-full ${containerClassName || ''}`}>
         <label htmlFor={inputId} className="block text-sm font-medium text-gray-700 mb-1">
           {label}
         </label>
         <div className="relative">
-          {icon && (
+          {/* FIX: Ditambahkan pengecekan React.isValidElement sebagai best practice */}
+          {React.isValidElement(icon) && (
             <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-              {React.cloneElement(icon as React.ReactElement, {
+              {/* FIX: Casting 'as' tidak lagi diperlukan karena tipe sudah benar */}
+              {React.cloneElement(icon, {
                 className: 'h-5 w-5 text-gray-400',
               })}
             </div>
           )}
           <input
             id={inputId}
-            className={`${inputStyles({ hasError: !!error })} ${icon ? 'pl-10' : ''} ${className}`}
+            // FIX: Pastikan className dari props selalu ada untuk mencegah 'undefined'
+            className={inputStyles({ hasError: !!error, className: `${icon ? 'pl-10' : ''} ${className || ''}` })}
             ref={ref}
             {...props}
           />
