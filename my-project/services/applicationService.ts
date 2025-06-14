@@ -1,10 +1,9 @@
 import apiClient from '@/lib/apiClient';
-import { Application } from '@/lib/types';
+// FIX 1: Impor Application dan ApplicationFormData dari sumber yang sama dan benar
+import { Application, ApplicationFormData } from '@/lib/types'; 
+import { AxiosError } from 'axios';
 
-interface ApplicationFormData {
-  coverLetter?: string;
-  // Bisa ditambahkan field lain sesuai kebutuhan form lamaran
-}
+// FIX 2: Definisi interface lokal dihapus dari sini.
 
 class ApplicationService {
   /**
@@ -17,12 +16,17 @@ class ApplicationService {
     try {
       const response = await apiClient.post(`/jobs/${jobId}/apply`, formData);
       return response.data;
-    } catch (error) {
+    } catch (error: unknown) {
       console.error(`Error applying to job ${jobId}:`, error);
-      // Cek jika error karena sudah pernah melamar
-      if ((error as any).response?.data?.message === 'Already applied') {
-        throw new Error('Anda sudah pernah melamar di pekerjaan ini.');
+
+      if (error instanceof AxiosError) {
+        // Cek jika error karena sudah pernah melamar
+        if (error.response?.data?.message === 'Already applied') {
+          throw new Error('Anda sudah pernah melamar di pekerjaan ini.');
+        }
       }
+      
+      // Error fallback
       throw new Error('Gagal mengirim lamaran.');
     }
   }
