@@ -1,30 +1,27 @@
+// src/lib/apiClient.ts
+
 import axios from 'axios';
 
 // Membuat instance Axios dengan konfigurasi dasar
 const apiClient = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api', // Fallback untuk development
   headers: {
     'Content-Type': 'application/json',
+    'Accept': 'application/json',
   },
 });
 
-/*
-  Interceptor untuk Menambahkan Token Otentikasi ke Setiap Request.
-  Token bisa diambil dari local storage, cookies, atau state management.
-*/
-apiClient.interceptors.request.use(
-  (config) => {
-    // Diasumsikan token disimpan di local storage
-    const token = localStorage.getItem('authToken');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
+/**
+ * Fungsi helper untuk memasang token otentikasi ke header default Axios.
+ * @param token - Token JWT atau null untuk menghapusnya.
+ */
+export const setAuthToken = (token: string | null) => {
+  if (token) {
+    apiClient.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+  } else {
+    delete apiClient.defaults.headers.common['Authorization'];
   }
-);
+};
 
 /*
   Interceptor untuk menangani respons error secara global.
@@ -34,14 +31,15 @@ apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response && error.response.status === 401) {
-      // Handle unauthenticated error (misal: hapus token & redirect)
-      console.error("Unauthenticated! Redirecting to login...");
-      // window.location.href = '/login';
+      console.error("Unauthenticated or Token Expired! Logging out...");
+      // Di dunia nyata, Anda akan memanggil fungsi logout dari store di sini
+      // untuk membersihkan state dan redirect pengguna.
+      // Contoh: useAuthStore.getState().logout();
     }
     // Melempar error agar bisa ditangkap oleh blok catch di service
     return Promise.reject(error);
   }
 );
 
-
+// Meng-export instance sebagai default export
 export default apiClient;
