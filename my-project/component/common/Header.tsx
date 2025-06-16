@@ -1,161 +1,175 @@
+// src/components/common/Header.tsx
 "use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation'; // Ini sudah benar untuk App Router
-import { FaRegComment, FaBell, FaGlobe, FaBars, FaTimes } from 'react-icons/fa';
+import { useState, useRef, useEffect } from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useAuthStore } from '@/store/authStore'; // 1. Impor store otentikasi
+
+// 2. Menggunakan ikon dari lucide-react untuk tampilan yang lebih modern
+import { 
+  Globe, 
+  MessageSquare, 
+  Bell, 
+  Menu, 
+  X, 
+  ChevronDown,
+  User,
+  LogOut,
+  Settings
+} from 'lucide-react';
+
+// 3. Custom Hook untuk menutup dropdown saat klik di luar area
+function useOnClickOutside(ref: React.RefObject<HTMLDivElement>, handler: () => void) {
+  useEffect(() => {
+    const listener = (event: MouseEvent | TouchEvent) => {
+      if (!ref.current || ref.current.contains(event.target as Node)) {
+        return;
+      }
+      handler();
+    };
+    document.addEventListener('mousedown', listener);
+    document.addEventListener('touchstart', listener);
+    return () => {
+      document.removeEventListener('mousedown', listener);
+      document.removeEventListener('touchstart', listener);
+    };
+  }, [ref, handler]);
+}
 
 export default function Header() {
+  const { user, isAuthenticated, logout } = useAuthStore(); // Mengambil state dan action dari store
+  
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isNotificationOpen, setIsNotificationOpen] = useState(false);
-  const [isLanguageDropdownOpen, setIsLanguageDropdownOpen] = useState(false);
-  const [selectedLanguage, setSelectedLanguage] = useState('ID');
+  const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
+  
   const router = useRouter();
+  
+  // Refs untuk setiap dropdown
+  const languageRef = useRef<HTMLDivElement>(null);
+  const notificationsRef = useRef<HTMLDivElement>(null);
+  const profileRef = useRef<HTMLDivElement>(null);
 
-  const handleLanguageChange = (language: string) => {
-    setSelectedLanguage(language);
-    setIsLanguageDropdownOpen(false);
-    // Logika untuk mengubah bahasa aplikasi bisa ditambahkan di sini
-  };
+  // Menggunakan custom hook
+  useOnClickOutside(languageRef, () => activeDropdown === 'language' && setActiveDropdown(null));
+  useOnClickOutside(notificationsRef, () => activeDropdown === 'notifications' && setActiveDropdown(null));
+  useOnClickOutside(profileRef, () => activeDropdown === 'profile' && setActiveDropdown(null));
 
-  const toggleMobileMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
+  const handleLogout = () => {
+    logout();
+    setActiveDropdown(null);
+    router.push('/'); // Redirect ke halaman utama setelah logout
   };
-
-  const navigateToLogin = () => {
-    router.push('/login'); // Path yang benar untuk src/app/(auth)/login/page.tsx
-    if (isMenuOpen) { // Jika menu mobile terbuka, tutup setelah navigasi
-        setIsMenuOpen(false);
-    }
-  };
+  
+  const mainNavLinks = [
+    { href: '/jobs', label: 'Lowongan Kerja' },
+    { href: '/companies', label: 'Perusahaan' },
+    { href: '/blog', label: 'Blog' },
+    { href: '/community', label: 'Komunitas' },
+  ];
 
   return (
-    <header className="bg-indigo-900 text-white py-4">
-      <div className="max-w-7xl mx-auto flex justify-between items-center px-6">
+    <header className="bg-gray-900 text-gray-200 shadow-md sticky top-0 z-50">
+      <div className="container mx-auto flex justify-between items-center p-4">
         {/* Logo */}
-        <div className="text-2xl font-semibold cursor-pointer" onClick={() => router.push('/')}>
-          <span className="text-green-500">Recruit</span>Easy
-        </div>
+        <Link href="/" className="text-2xl font-bold text-white">
+          Recruiteasy
+        </Link>
 
-        {/* Mobile Menu Toggle Button */}
-        <div className="md:hidden">
-          <button
-            onClick={toggleMobileMenu}
-            className="text-white focus:outline-none"
-          >
-            {isMenuOpen ? <FaTimes className="w-6 h-6" /> : <FaBars className="w-6 h-6" />}
-          </button>
-        </div>
-
-        {/* Navbar Links for Desktop */}
-        <nav className="hidden md:flex space-x-8">
-          <a href="/jobs" className="hover:text-green-500">Lowongan Kerja</a>
-          {/* Asumsi Anda punya halaman /companies untuk "Perusahaan" */}
-          <a href="/companies" className="hover:text-green-500">Perusahaan</a>
-          {/* <a href="/blog" className="hover:text-green-500">Blog</a>
-          <a href="/help" className="hover:text-green-500">Help Center</a> */}
+        {/* Navigasi Desktop */}
+        <nav className="hidden md:flex items-center gap-6">
+          {mainNavLinks.map(link => (
+            <Link key={link.href} href={link.href} className="text-sm font-medium hover:text-white transition-colors">
+              {link.label}
+            </Link>
+          ))}
         </nav>
 
-        {/* Container untuk item-item di kanan pada tampilan desktop */}
-        <div className="hidden md:flex items-center space-x-6">
-          {/* Language Selection Dropdown */}
-          <div className="relative">
-            <button
-              onClick={() => setIsLanguageDropdownOpen(!isLanguageDropdownOpen)}
-              className="flex items-center space-x-2 hover:text-green-500"
-            >
-              <FaGlobe className="w-6 h-6 text-white" />
-              <span className="ml-2 text-white">{selectedLanguage === 'ID' ? 'Bahasa' : 'English'}</span>
+        {/* Ikon dan Profil Pengguna (Desktop) */}
+        <div className="hidden md:flex items-center gap-4">
+          {/* Language Dropdown */}
+          <div className="relative" ref={languageRef}>
+            <button onClick={() => setActiveDropdown(activeDropdown === 'language' ? null : 'language')} className="flex items-center gap-1 hover:text-white p-2 rounded-full transition-colors">
+              <Globe size={20} />
             </button>
-            {isLanguageDropdownOpen && (
-              <div className="absolute top-10 right-0 bg-indigo-800 text-white rounded-lg shadow-lg w-40 p-4 z-10">
-                <ul className="space-y-2">
-                  <li
-                    className="hover:bg-indigo-700 p-2 rounded cursor-pointer"
-                    onClick={() => handleLanguageChange('ID')}
-                  >
-                    Bahasa Indonesia
-                  </li>
-                  <li
-                    className="hover:bg-indigo-700 p-2 rounded cursor-pointer"
-                    onClick={() => handleLanguageChange('EN')}
-                  >
-                    English
-                  </li>
-                </ul>
+            {activeDropdown === 'language' && (
+              <div className="absolute top-full right-0 mt-2 w-40 bg-gray-800 rounded-md shadow-lg border border-gray-700 p-2">
+                <a href="#" className="block px-4 py-2 text-sm hover:bg-gray-700 rounded">Bahasa</a>
+                <a href="#" className="block px-4 py-2 text-sm hover:bg-gray-700 rounded">English</a>
               </div>
             )}
           </div>
 
-          {/* Icons (Chat & Notifications) - Sesuaikan path jika perlu */}
-          <div className="flex items-center space-x-4">
-            <a href="/chat" className="flex items-center space-x-2 hover:text-green-500">
-              <FaRegComment className="w-6 h-6 text-white" />
-              <span className="hidden sm:block">Chat</span>
-            </a>
-            <div className="relative">
-              <button
-                onClick={() => setIsNotificationOpen(!isNotificationOpen)}
-                className="flex items-center space-x-2 hover:text-green-500"
-              >
-                <FaBell className="w-6 h-6 text-white" />
+          <div className="flex items-center gap-2">
+            <Link href="/chat" className="hover:text-white p-2 rounded-full transition-colors"><MessageSquare size={20} /></Link>
+            <div className="relative" ref={notificationsRef}>
+               <button onClick={() => setActiveDropdown(activeDropdown === 'notifications' ? null : 'notifications')} className="hover:text-white p-2 rounded-full transition-colors">
+                 <Bell size={20} />
+               </button>
+               {activeDropdown === 'notifications' && (
+                  <div className="absolute top-full right-0 mt-2 w-72 bg-gray-800 rounded-md shadow-lg border border-gray-700 p-3">
+                    <p className="font-semibold px-2">Notifikasi</p>
+                    {/* Isi Notifikasi */}
+                  </div>
+               )}
+            </div>
+          </div>
+          
+          <div className="h-6 w-px bg-gray-600" />
+
+          {/* Kondisi Otentikasi */}
+          {isAuthenticated() && user ? (
+            <div className="relative" ref={profileRef}>
+              <button onClick={() => setActiveDropdown(activeDropdown === 'profile' ? null : 'profile')} className="flex items-center gap-2 hover:bg-gray-700 p-1.5 rounded-full transition-colors">
+                <span className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-sm font-bold">{user.name.charAt(0)}</span>
+                <span className="font-medium text-sm">{user.name}</span>
+                <ChevronDown size={16} className={`transition-transform ${activeDropdown === 'profile' ? 'rotate-180' : ''}`} />
               </button>
-              {isNotificationOpen && (
-                <div className="absolute top-10 right-0 bg-indigo-800 text-white rounded-lg shadow-lg w-64 p-4 z-10">
-                  <p className="font-semibold text-lg">Notifikasi Baru</p>
-                  <ul className="mt-2 space-y-2">
-                    <li className="hover:bg-indigo-700 p-2 rounded">Pesan baru dari admin</li>
-                    <li className="hover:bg-indigo-700 p-2 rounded">Pembaruan lowongan pekerjaan</li>
-                    <li className="hover:bg-indigo-700 p-2 rounded">Reminder: Deadline besok</li>
-                  </ul>
+              {activeDropdown === 'profile' && (
+                <div className="absolute top-full right-0 mt-2 w-48 bg-gray-800 rounded-md shadow-lg border border-gray-700 p-2">
+                  <Link href="/profile" className="flex items-center gap-2 w-full px-3 py-2 text-sm hover:bg-gray-700 rounded"><User size={16}/>Profil</Link>
+                  <Link href="/settings" className="flex items-center gap-2 w-full px-3 py-2 text-sm hover:bg-gray-700 rounded"><Settings size={16}/>Pengaturan</Link>
+                  <div className="my-1 h-px bg-gray-700" />
+                  <button onClick={handleLogout} className="flex items-center gap-2 w-full px-3 py-2 text-sm text-red-400 hover:bg-red-500 hover:text-white rounded"><LogOut size={16}/>Keluar</button>
                 </div>
               )}
             </div>
-          </div>
+          ) : (
+            <Link href="/login" className="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-semibold hover:bg-blue-700 transition-colors">
+              Masuk
+            </Link>
+          )}
+        </div>
 
-          {/* Login Button (Desktop) */}
-          <div>
-            <button
-              onClick={navigateToLogin} // Ganti ke fungsi navigasi
-              className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
-            >
-              Login
-            </button>
-          </div>
+        {/* Tombol Menu Mobile */}
+        <div className="md:hidden">
+          <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="p-2">
+            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
         </div>
       </div>
 
-      {/* Mobile Menu Content */}
+      {/* Konten Menu Mobile */}
       {isMenuOpen && (
-        <div className="md:hidden bg-indigo-800 text-white py-4 px-6">
-          <nav className="space-y-4">
-            <a href="/jobs" className="block hover:text-green-500" onClick={() => setIsMenuOpen(false)}>Lowongan Kerja</a>
-            <a href="/companies" className="block hover:text-green-500" onClick={() => setIsMenuOpen(false)}>Perusahaan</a>
-            {/* <a href="/blog" className="block hover:text-green-500" onClick={() => setIsMenuOpen(false)}>Blog</a>
-            <a href="/help" className="block hover:text-green-500" onClick={() => setIsMenuOpen(false)}>Help Center</a> */}
-            
-            <div className="mt-4 border-t border-indigo-700 pt-4">
-                <button
-                    onClick={() => { handleLanguageChange('ID'); }}
-                    className={`w-full text-left p-2 rounded ${selectedLanguage === 'ID' ? 'bg-indigo-700' : ''} hover:bg-indigo-600`}
-                >
-                    Bahasa Indonesia
-                </button>
-                <button
-                    onClick={() => { handleLanguageChange('EN'); }}
-                    className={`w-full text-left p-2 rounded ${selectedLanguage === 'EN' ? 'bg-indigo-700' : ''} hover:bg-indigo-600 mt-2`}
-                >
-                    English
-                </button>
-            </div>
-
-            {/* Login Button (Mobile) */}
-            <div className="mt-4">
-              <button
-                onClick={navigateToLogin} // Ganti ke fungsi navigasi
-                className="w-full py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
-              >
-                Login
-              </button>
+        <div className="md:hidden bg-gray-900 border-t border-gray-700 px-4 pb-4">
+          <nav className="flex flex-col gap-2 mt-4">
+            {mainNavLinks.map(link => (
+              <Link key={link.href} href={link.href} onClick={() => setIsMenuOpen(false)} className="px-3 py-2 hover:bg-gray-800 rounded-md">
+                {link.label}
+              </Link>
+            ))}
+            {/* Tambahkan link lain untuk mobile di sini */}
+            <div className="mt-4 border-t border-gray-700 pt-4">
+               {isAuthenticated() && user ? (
+                 <div>
+                    <p className='px-3 text-sm text-gray-400'>Masuk sebagai {user.name}</p>
+                    <button onClick={handleLogout} className="flex items-center gap-2 w-full mt-2 px-3 py-2 text-sm text-red-400 hover:bg-red-500 hover:text-white rounded"><LogOut size={16}/>Keluar</button>
+                 </div>
+               ) : (
+                <Link href="/login" onClick={() => setIsMenuOpen(false)} className="bg-blue-600 text-white w-full block text-center py-2 rounded-md text-sm font-semibold hover:bg-blue-700 transition-colors">
+                  Masuk
+                </Link>
+               )}
             </div>
           </nav>
         </div>
