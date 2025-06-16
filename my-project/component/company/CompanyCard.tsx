@@ -1,32 +1,41 @@
 // src/components/company/CompanyCard.tsx
-import React from "react";
-import { useRouter } from "next/router";
+
+import Link from 'next/link';
+import Image from 'next/image';
+import { Company } from '@/lib/types';
+import { MapPin, Briefcase } from 'lucide-react';
 
 interface CompanyCardProps {
-  companyId: string;
-  companyName: string;
-  companyDescription: string;
+  company: Company;
 }
 
-const CompanyCard: React.FC<CompanyCardProps> = ({ companyId, companyName, companyDescription }) => {
-  const router = useRouter();
-
-  const handleViewProfile = () => {
-    router.push(`/companies/${companyId}`);
-  };
-
+export function CompanyCard({ company }: CompanyCardProps) {
   return (
-    <div className="bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-all">
-      <h3 className="text-xl font-semibold">{companyName}</h3>
-      <p className="text-gray-600">{companyDescription}</p>
-      <button
-        onClick={handleViewProfile}
-        className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
-      >
-        View Profile
-      </button>
-    </div>
+    <Link href={`/companies/${company.id}`} className="block group">
+      <div className="bg-white p-6 rounded-lg border border-gray-200 h-full flex flex-col shadow-sm hover:shadow-xl hover:border-blue-500 transition-all duration-300">
+        <div className="flex items-center gap-4 mb-4">
+          <Image
+            src={company.logoUrl}
+            alt={`${company.name} logo`}
+            width={64}
+            height={64}
+            className="rounded-md border p-1 object-contain"
+          />
+          <div>
+            <h3 className="text-xl font-bold text-gray-900 group-hover:text-blue-700">{company.name}</h3>
+            <p className="text-sm text-gray-500 flex items-center gap-1.5 mt-1">
+              <MapPin size={14} /> {company.location}
+            </p>
+          </div>
+        </div>
+        <p className="text-gray-600 text-sm flex-grow mb-4">{company.tagline}</p>
+        <div className="mt-auto pt-4 border-t border-gray-100">
+          <span className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-800">
+            <Briefcase size={14} className="mr-2" />
+            {company.activeJobsCount} Lowongan Tersedia
+          </span>
+        </div>
+      </div>
+    </Link>
   );
-};
-
-export default CompanyCard;
+} 
