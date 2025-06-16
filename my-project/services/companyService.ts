@@ -1,49 +1,61 @@
+// src/services/companyService.ts
 import axios from 'axios';
 
-const API_URL = 'https://your-backend-api.com/companies'; // Replace with your actual backend URL
+import apiClient from '@/lib/apiClient';
+import { Company, PaginatedApiResponse } from '@/lib/types';
 
-// Define a type for company data
-interface CompanyData {
-  name: string;
-  location: string;
-  // Add other company fields as needed
+/**
+ * @interface GetCompaniesParams
+ * @description Parameter untuk mengambil daftar perusahaan dengan filter dan paginasi.
+ */
+export interface GetCompaniesParams {
+  q?: string;      // Kata kunci pencarian nama perusahaan
+  page?: number;   // Nomor halaman
+  limit?: number;  // Jumlah item per halaman
 }
 
-// Fetch all companies
-export const fetchCompanies = async () => {
-  try {
-    const response = await axios.get(`${API_URL}/`);
-    return response.data; // Returning list of companies
-  } catch (error: unknown) {
-    if (error instanceof Error) {
-      throw new Error(error.message || 'Failed to fetch companies');
-    }
-    throw new Error('Failed to fetch companies');
-  }
-};
+/**
+ * @interface PaginatedCompaniesResponse
+ * @description Struktur respons paginasi untuk data perusahaan.
+ */
+export interface PaginatedCompaniesResponse {
+  companies: Company[];
+  totalCompanies: number;
+  totalPages: number;
+  currentPage: number;
+}
 
-// Fetch company details by ID
-export const fetchCompanyById = async (companyId: string) => {
+/**
+ * Mengambil daftar perusahaan dari API dengan opsi pencarian dan paginasi.
+ * @param params - Objek parameter untuk filtering dan paginasi.
+ * @returns Promise yang resolve menjadi data perusahaan terpaginasi.
+ */
+async function getCompanies(params: GetCompaniesParams): Promise<PaginatedCompaniesResponse> {
   try {
-    const response = await axios.get(`${API_URL}/${companyId}`);
-    return response.data; // Returning company details
-  } catch (error: unknown) {
-    if (error instanceof Error) {
-      throw new Error(error.message || 'Failed to fetch company details');
-    }
-    throw new Error('Failed to fetch company details');
-  }
-};
+    const queryParams = new URLSearchParams({
+      _page: String(params.page || 1),
+      _limit: String(params.limit || 12), // Tampilkan 12 perusahaan per halaman
+    });
 
-// Create a new company (if applicable in your system)
-export const createCompany = async (companyData: CompanyData) => {
-  try {
-    const response = await axios.post(`${API_URL}/create`, companyData);
-    return response.data; // Returning created company details
-  } catch (error: unknown) {
-    if (error instanceof Error) {
-      throw new Error(error.message || 'Failed to create company');
+    if (params.q) {
+      queryParams.append('q', params.q);
     }
-    throw new Error('Failed to create company');
+
+    const response = await apiClient.get<PaginatedApiResponse<Company>>(`/companies?${queryParams.toString()}`);
+    const { data, meta } = response.data;
+    
+    return {
+      companies: data,
+      totalCompanies: meta.total,
+      currentPage: params.page || 1,
+      totalPages: Math.ceil(meta.total / (params.limit || 12)),
+    };
+  } catch (error) {
+    console.error("Failed to fetch companies:", error);
+    return { companies: [], totalCompanies: 0, currentPage: 1, totalPages: 1 };
   }
+}
+
+export const companyService = {
+  getCompanies,
 };
