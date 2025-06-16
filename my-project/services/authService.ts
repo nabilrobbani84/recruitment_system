@@ -1,26 +1,16 @@
 // src/services/authService.ts
 
-import { apiClient, setAuthToken } from '@/lib/apiClient'; // Asumsi ada API client terpusat
-import type { AuthUser } from '@/store/authStore'; // Impor tipe AuthUser
+// 1. PERBAIKAN IMPORT: Impor 'apiClient' sebagai default, dan 'setAuthToken' sebagai named.
+import apiClient, { setAuthToken } from '@/lib/apiClient';
+import axios from 'axios'; // Impor axios untuk menggunakan type guard-nya
+import type { AuthUser } from '@/store/authStore';
 
-// --- Tipe Data untuk Payload & Respons ---
-
-/**
- * @interface LoginCredentials
- * @description Tipe data untuk kredensial yang dibutuhkan saat login.
- * HARUS DIEKSPOR agar bisa digunakan oleh file lain seperti authStore.
- */
-
+// --- Tipe Data (Tidak ada perubahan) ---
 export interface LoginCredentials {
   email: string;
   password: string;
 }
 
-/**
- * @interface RegisterPayload
- * @description Tipe data untuk payload yang dikirim saat registrasi pengguna baru.
- * HARUS DIEKSPOR.
- */
 export interface RegisterPayload {
   name: string;
   email: string;
@@ -28,59 +18,45 @@ export interface RegisterPayload {
   role: 'candidate' | 'employer';
 }
 
-/**
- * @interface AuthResponse
- * @description Tipe data untuk respons yang diharapkan dari API setelah login/register berhasil.
- */
 interface AuthResponse {
   user: AuthUser;
   token: string;
 }
 
-// --- Objek Service Utama ---
+// --- Fungsi-fungsi Service ---
 
-/**
- * Mengirim permintaan login ke server.
- * @param credentials - Objek berisi email dan password.
- * @returns Promise yang resolve menjadi data pengguna dan token.
- */
 async function login(credentials: LoginCredentials): Promise<AuthResponse> {
+  // 2. PERBAIKAN ERROR HANDLING: Ganti 'any' dengan 'unknown'
   try {
     const response = await apiClient.post<AuthResponse>('/auth/login', credentials);
-    
-    // Setelah berhasil login, pasang token di header default apiClient untuk permintaan selanjutnya
     setAuthToken(response.data.token);
-    
     return response.data;
-  } catch (error: any) {
-    // Tangani dan lempar kembali error dengan pesan yang lebih spesifik
-    throw new Error(error.response?.data?.message || 'Login gagal');
+  } catch (error: unknown) { // Gunakan 'unknown'
+    // Lakukan type check sebelum mengakses properti error
+    if (axios.isAxiosError(error) && error.response) {
+      // Sekarang aman untuk mengakses error.response.data
+      throw new Error(error.response.data.message || 'Email atau password salah.');
+    }
+    // Fallback untuk error non-Axios (misal: masalah jaringan)
+    throw new Error('Terjadi kesalahan koneksi. Silakan coba lagi.');
   }
 }
 
-/**
- * Mengirim permintaan registrasi ke server.
- * @param payload - Data lengkap untuk registrasi pengguna baru.
- * @returns Promise yang resolve menjadi data pengguna dan token.
- */
 async function register(payload: RegisterPayload): Promise<AuthResponse> {
+  // 3. PERBAIKAN ERROR HANDLING: Ganti 'any' dengan 'unknown'
   try {
     const response = await apiClient.post<AuthResponse>('/auth/register', payload);
-
-    // Setelah berhasil registrasi, langsung pasang token
     setAuthToken(response.data.token);
-
     return response.data;
-  } catch (error: any) {
-    throw new Error(error.response?.data?.message || 'Registrasi gagal');
+  } catch (error: unknown) { // Gunakan 'unknown'
+    if (axios.isAxiosError(error) && error.response) {
+      throw new Error(error.response.data.message || 'Registrasi gagal. Periksa kembali data Anda.');
+    }
+    throw new Error('Terjadi kesalahan koneksi. Silakan coba lagi.');
   }
 }
 
-/**
- * Menghapus token dari header apiClient.
- */
 function logout() {
-  // Hapus token dari header default apiClient
   setAuthToken(null);
   console.log("Auth token cleared from API client.");
 }
