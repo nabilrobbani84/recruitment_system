@@ -65,24 +65,61 @@ export interface Education {
   endDate?: string;
 }
 
-// --- PENAMBAHAN UNTUK MEMPERBAIKI ERROR ---
-
-/**
- * Tipe data dasar untuk sebuah Keahlian (Skill).
- * Digunakan untuk merepresentasikan keahlian yang dimiliki oleh seorang kandidat.
- */
 export interface Skill {
-  id: string | number; // ID bisa string atau number tergantung implementasi backend
+  id: string | number;
   name: string;
 }
 
-/**
- * Tipe data untuk saran Keahlian (Skill Suggestion) pada fitur pencarian.
- * Biasanya menyertakan data tambahan seperti jumlah pekerjaan yang relevan.
- */
 export interface SkillSuggestion {
   id: string | number;
   name: string;
-  jobCount: number; // Jumlah pekerjaan yang membutuhkan keahlian ini
+  jobCount: number;
 }
-// --- AKHIR PENAMBAHAN ---
+
+// =================================================================
+// --- PENAMBAHAN TIPE DATA UNTUK BLOGSERVICE ---
+// =================================================================
+
+/**
+ * @interface BlogPost
+ * @description Mendefinisikan struktur data untuk satu artikel atau postingan blog.
+ * Ini adalah tipe data mentah yang diharapkan dari API sebelum transformasi.
+ */
+export interface BlogPost {
+  id: number | string;
+  slug: string; // URL-friendly identifier, e.g., "panduan-sukses-wawancara"
+  title: string;
+  content: string; // Isi artikel, bisa dalam format HTML atau Markdown
+  excerpt: string; // Ringkasan singkat dari artikel
+  imageUrl: string; // URL gambar sampul
+  authorName: string;
+  authorAvatarUrl?: string; // URL foto avatar penulis (opsional)
+  category: string;
+  tags: string[]; // Daftar tag terkait artikel
+  publishedAt: string; // Tanggal publikasi dalam format string ISO 8601
+}
+
+/**
+ * @interface PaginatedApiResponse<T>
+ * @description Tipe generik untuk respons API yang mengandung data dengan paginasi.
+ * Dapat digunakan kembali untuk berbagai jenis data (BlogPost, Job, dll).
+ * @template T - Tipe dari item data yang ada di dalam array `data`.
+ */
+export interface PaginatedApiResponse<T> {
+  /**
+   * Array yang berisi item-item data pada halaman saat ini.
+   */
+  data: T[];
+  /**
+   * Objek yang berisi metadata paginasi dari server.
+   */
+  meta: {
+    /**
+     * Jumlah total semua item yang tersedia di server.
+     */
+    total: number;
+    // Backend mungkin juga menyertakan informasi lain seperti:
+    // page: number;
+    // limit: number;
+  };
+}
