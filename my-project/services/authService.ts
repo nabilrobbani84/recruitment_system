@@ -1,58 +1,92 @@
-import axiosInstance from '../lib/axiosInstance'; 
+// src/services/authService.ts
 
-// Definisikan tipe data untuk request dan response jika diperlukan
-interface LoginCredentials {
+import { apiClient, setAuthToken } from '@/lib/apiClient'; // Asumsi ada API client terpusat
+import type { AuthUser } from '@/store/authStore'; // Impor tipe AuthUser
+
+// --- Tipe Data untuk Payload & Respons ---
+
+/**
+ * @interface LoginCredentials
+ * @description Tipe data untuk kredensial yang dibutuhkan saat login.
+ * HARUS DIEKSPOR agar bisa digunakan oleh file lain seperti authStore.
+ */
+
+export interface LoginCredentials {
   email: string;
-  password_hash: string; // Sesuaikan dengan field yang diharapkan backend
+  password: string;
 }
 
-interface RegisterData {
-  full_name: string;
+/**
+ * @interface RegisterPayload
+ * @description Tipe data untuk payload yang dikirim saat registrasi pengguna baru.
+ * HARUS DIEKSPOR.
+ */
+export interface RegisterPayload {
+  name: string;
   email: string;
-  password_hash: string;
-  role: 'candidate' | 'employer'; // Sesuaikan
+  password: string;
+  role: 'candidate' | 'employer';
 }
 
+/**
+ * @interface AuthResponse
+ * @description Tipe data untuk respons yang diharapkan dari API setelah login/register berhasil.
+ */
 interface AuthResponse {
+  user: AuthUser;
   token: string;
-  user: {
-    id: string;
-    full_name: string;
-    email: string;
-    role: 'candidate' | 'employer';
-  };
 }
+
+// --- Objek Service Utama ---
+
+/**
+ * Mengirim permintaan login ke server.
+ * @param credentials - Objek berisi email dan password.
+ * @returns Promise yang resolve menjadi data pengguna dan token.
+ */
+async function login(credentials: LoginCredentials): Promise<AuthResponse> {
+  try {
+    const response = await apiClient.post<AuthResponse>('/auth/login', credentials);
+    
+    // Setelah berhasil login, pasang token di header default apiClient untuk permintaan selanjutnya
+    setAuthToken(response.data.token);
+    
+    return response.data;
+  } catch (error: any) {
+    // Tangani dan lempar kembali error dengan pesan yang lebih spesifik
+    throw new Error(error.response?.data?.message || 'Login gagal');
+  }
+}
+
+/**
+ * Mengirim permintaan registrasi ke server.
+ * @param payload - Data lengkap untuk registrasi pengguna baru.
+ * @returns Promise yang resolve menjadi data pengguna dan token.
+ */
+async function register(payload: RegisterPayload): Promise<AuthResponse> {
+  try {
+    const response = await apiClient.post<AuthResponse>('/auth/register', payload);
+
+    // Setelah berhasil registrasi, langsung pasang token
+    setAuthToken(response.data.token);
+
+    return response.data;
+  } catch (error: any) {
+    throw new Error(error.response?.data?.message || 'Registrasi gagal');
+  }
+}
+
+/**
+ * Menghapus token dari header apiClient.
+ */
+function logout() {
+  // Hapus token dari header default apiClient
+  setAuthToken(null);
+  console.log("Auth token cleared from API client.");
+}
+
 export const authService = {
-  login: async (credentials: LoginCredentials): Promise<AuthResponse> => {
-    console.log('Simulating login:', credentials);
-    await new Promise(resolve => setTimeout(resolve, 500));
-    if (credentials.email === "gagal@mail.com") throw new Error("Email atau password salah (simulasi).");
-    return {
-      token: 'dummy-auth-token-12345',
-      user: {
-        id: 'user-1',
-        full_name: credentials.email.split('@')[0],
-        email: credentials.email,
-        role: credentials.email.includes('employer') ? 'employer' : 'candidate',
-      },
-    };
-  },
-
-  register: async (data: RegisterData): Promise<void> => {
-    // await axiosInstance.post('/auth/register', data);
-    console.log('Simulating register:', data);
-    await new Promise(resolve => setTimeout(resolve, 500));
-    if (data.email === "sudahada@mail.com") throw new Error("Email sudah terdaftar (simulasi).");
-  },
-
-  forgotPassword: async (data: { email: string }): Promise<void> => {
-    console.log('Simulating forgot password:', data);
-    await new Promise(resolve => setTimeout(resolve, 500));
-  },
-
-  resetPassword: async (data: { token: string; new_password_hash: string }): Promise<void> => {
-    console.log('Simulating reset password for token:', data.token);
-    await new Promise(resolve => setTimeout(resolve, 500));
-    if (data.token === "invalid-token") throw new Error("Token tidak valid atau kedaluwarsa (simulasi).");
-  },
+  login,
+  register,
+  logout,
 };
