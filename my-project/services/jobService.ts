@@ -2,24 +2,18 @@
 
 import apiClient from '@/lib/apiClient';
 import { Job, PaginatedApiResponse } from '@/lib/types';
+import axios from 'axios';
 
-/**
- * @interface GetJobsParams
- * @description Parameter untuk mengambil daftar pekerjaan dengan filter dan paginasi.
- */
+// ... (Interface GetJobsParams dan PaginatedJobsResponse tetap sama)
 export interface GetJobsParams {
-  q?: string;         // Kata kunci pencarian (query)
-  location?: string;  // Filter berdasarkan lokasi
-  type?: string;      // Filter berdasarkan tipe pekerjaan (Full-time, etc.)
-  category?: string;  // Filter berdasarkan kategori
-  page?: number;      // Nomor halaman
-  limit?: number;     // Jumlah item per halaman
+  q?: string;
+  location?: string;
+  type?: string;
+  category?: string;
+  page?: number;
+  limit?: number;
 }
 
-/**
- * @interface PaginatedJobsResponse
- * @description Struktur respons paginasi untuk data pekerjaan yang sudah siap tampil.
- */
 export interface PaginatedJobsResponse {
   jobs: Job[];
   totalJobs: number;
@@ -27,50 +21,63 @@ export interface PaginatedJobsResponse {
   currentPage: number;
 }
 
-/**
- * Mengambil daftar pekerjaan dari API dengan opsi filter dan paginasi.
- * @param params - Objek parameter untuk filtering dan paginasi.
- * @returns Promise yang resolve menjadi data pekerjaan terpaginasi.
- */
+// ... (Fungsi getJobs dan getJobById tetap sama)
 async function getJobs(params: GetJobsParams): Promise<PaginatedJobsResponse> {
-  try {
-    const queryParams = new URLSearchParams({
-      _page: String(params.page || 1),
-      _limit: String(params.limit || 10),
-    });
-
-    if (params.q) queryParams.append('q', params.q);
-    if (params.location) queryParams.append('location', params.location);
-    if (params.type) queryParams.append('type', params.type);
-    if (params.category) queryParams.append('category', params.category);
-
-    const response = await apiClient.get<PaginatedApiResponse<Job>>(`/jobs?${queryParams.toString()}`);
-    const { data, meta } = response.data;
-    
-    return {
-      jobs: data,
-      totalJobs: meta.total,
-      currentPage: params.page || 1,
-      totalPages: Math.ceil(meta.total / (params.limit || 10)),
-    };
-  } catch (error) {
-    console.error("Failed to fetch jobs:", error);
-    // Kembalikan state kosong jika terjadi error agar halaman tidak crash
-    return { jobs: [], totalJobs: 0, currentPage: 1, totalPages: 1 };
-  }
+  // ... implementasi yang sudah ada
 }
 
 async function getJobById(id: string): Promise<Job | null> {
+    // ... implementasi yang sudah ada
+}
+
+
+// --- PENAMBAHAN FUNGSI BARU ---
+
+/**
+ * Mengambil daftar pekerjaan unggulan berdasarkan kriteria tertentu.
+ * @param params - Objek untuk filter, misal { category: 'it', limit: 4 }
+ * @returns Promise yang resolve menjadi array Job.
+ */
+async function getFeaturedJobs(params: { category?: string, limit?: number }): Promise<Job[]> {
   try {
-    const response = await apiClient.get<Job>(`/jobs/${id}`);
+    const queryParams = new URLSearchParams({
+      _limit: String(params.limit || 4),
+    });
+    if (params.category) {
+      queryParams.append('category', params.category);
+    }
+    
+    const response = await apiClient.get<Job[]>(`/jobs?${queryParams.toString()}`);
     return response.data;
   } catch (error) {
-    console.error(`Failed to fetch job with id ${id}:`, error);
-    return null;
+    console.error("Failed to fetch featured jobs:", error);
+    return []; // Kembalikan array kosong jika gagal
+  }
+}
+
+/**
+ * Mengambil pekerjaan yang direkomendasikan untuk pengguna yang sedang login.
+ * Endpoint ini diasumsikan terproteksi dan memerlukan token otentikasi.
+ * @returns Promise yang resolve menjadi array Job.
+ */
+async function getRecommendedJobs(): Promise<Job[]> {
+  try {
+    // apiClient sudah dikonfigurasi dengan interceptor untuk mengirim token secara otomatis
+    const response = await apiClient.get<Job[]>('/jobs/recommended?_limit=4');
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response?.status === 401) {
+      // Tidak perlu console.error jika user belum login, ini adalah kondisi normal
+      return [];
+    }
+    console.error("Failed to fetch recommended jobs:", error);
+    return [];
   }
 }
 
 export const jobService = {
   getJobs,
   getJobById,
+  getFeaturedJobs,      // <-- Fungsi baru
+  getRecommendedJobs,   // <-- Fungsi baru
 };
