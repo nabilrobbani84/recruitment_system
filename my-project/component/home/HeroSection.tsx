@@ -1,7 +1,9 @@
 import React from 'react';
+import Image from 'next/image'; // 1. Impor komponen Image dari Next.js
 import { Button } from '@/component/common/Button';
-import { SearchBar } from '@/component/common/SearchBar'; // Asumsi SearchBar sudah ada
-import { MapPin, Search } from 'lucide-react';
+// 2. Impor InputField yang akan kita gunakan untuk lokasi
+import { InputField } from '@/component/common/InputField'; 
+import { Search, MapPin } from 'lucide-react';
 
 export const HeroSection = () => {
   return (
@@ -17,33 +19,47 @@ export const HeroSection = () => {
               Jelajahi ribuan lowongan pekerjaan dari perusahaan-perusahaan terkemuka di Indonesia. Mulai karir Anda bersama kami.
             </p>
 
-            {/* Form Pencarian */}
-            <div className="mt-8 p-4 bg-white rounded-lg shadow-lg flex flex-col md:flex-row gap-2">
-              <input 
-                type="text" 
-                placeholder="Jabatan atau kata kunci" 
-                className="w-full h-12 px-4 border border-gray-200 rounded-md focus:ring-blue-500 focus:outline-none"
-              />
-               <input 
-                type="text" 
-                placeholder="Lokasi" 
-                className="w-full md:w-auto h-12 px-4 border border-gray-200 rounded-md focus:ring-blue-500 focus:outline-none"
-              />
-              <Button size="lg" className="w-full md:w-auto flex-shrink-0">
-                <Search size={20} className="mr-2"/> Cari
-              </Button>
+            {/* Form Pencarian yang Sudah Diperbaiki */}
+            <div className="mt-8">
+                <div className="p-4 bg-white rounded-lg shadow-lg flex flex-col md:flex-row items-center gap-2">
+                    {/* 3. Menggunakan InputField dengan ikon Search */}
+                    <InputField
+                      label=""
+                      id="search-job"
+                      type="text"
+                      placeholder="Jabatan atau kata kunci"
+                      icon={<Search size={20} className="text-gray-400" />}
+                      containerClassName="w-full"
+                    />
+                    {/* 4. Menggunakan InputField dengan ikon MapPin */}
+                    <InputField
+                      label=""
+                      id="search-location"
+                      type="text"
+                      placeholder="Lokasi"
+                      icon={<MapPin size={20} className="text-gray-400" />}
+                      containerClassName="w-full md:w-auto"
+                    />
+                    <Button size="lg" className="w-full md:w-auto flex-shrink-0">
+                      <Search size={20} className="mr-2 md:hidden lg:block"/> Cari
+                    </Button>
+                </div>
+                <p className="mt-4 text-sm text-gray-500">
+                  Contoh: Software Engineer, Marketing, Jakarta, BUMN...
+                </p>
             </div>
-            <p className="mt-4 text-sm text-gray-500">
-              Contoh: Software Engineer, Marketing, Jakarta, BUMN...
-            </p>
           </div>
           
-          {/* Kolom Gambar */}
+          {/* Kolom Gambar yang Sudah Diperbaiki */}
           <div className="hidden md:block">
-            <img 
-              src="/images/hero-illustration.png" // Ganti dengan path gambar Anda
+            {/* 5. Menggunakan komponen <Image> dari Next.js */}
+            <Image 
+              src="/images/hero-illustration.png"
               alt="Ilustrasi orang sedang mencari pekerjaan"
+              width={500}
+              height={500}
               className="w-full h-auto object-contain"
+              priority // Tambahkan 'priority' untuk gambar penting di atas halaman (LCP)
             />
           </div>
         </div>
