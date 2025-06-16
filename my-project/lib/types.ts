@@ -123,3 +123,17 @@ export interface PaginatedApiResponse<T> {
     // limit: number;
   };
 }
+
+/**
+ * @interface Company
+ * @description Mendefinisikan struktur data untuk sebuah perusahaan.
+ */
+export interface Company {
+  id: string | number;
+  name: string;
+  logoUrl: string; // URL untuk logo perusahaan
+  tagline: string; // Deskripsi singkat atau tagline
+  location: string;
+  industry: string; // Mis: Teknologi, Finansial, Kesehatan
+  activeJobsCount: number; // Jumlah lowongan aktif
+}
