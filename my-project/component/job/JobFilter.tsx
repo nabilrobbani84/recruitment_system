@@ -14,8 +14,21 @@ type FilterInputs = {
 };
 
 interface JobFilterProps {
-    onFilter: (filters: FilterInputs) => void;
+  onFilter: (filters: FilterInputs) => void;
 }
+
+// 1. Definisikan daftar kategori IT di dalam sebuah array
+//    Ini adalah best practice agar mudah dikelola.
+const itJobCategories = [
+  { value: 'software-development', label: 'Pengembangan Perangkat Lunak' },
+  { value: 'data-science', label: 'Sains Data & Analitik' },
+  { value: 'devops-cloud', label: 'DevOps & Cloud' },
+  { value: 'cybersecurity', label: 'Keamanan Siber' },
+  { value: 'ui-ux-design', label: 'Desain UI/UX' },
+  { value: 'product-management', label: 'Manajemen Produk' },
+  { value: 'it-infrastructure', label: 'Infrastruktur & Jaringan' },
+  { value: 'qa-testing', label: 'QA / Pengujian Perangkat Lunak' },
+];
 
 export const JobFilter: React.FC<JobFilterProps> = ({ onFilter }) => {
   const { register, handleSubmit, reset } = useForm<FilterInputs>();
@@ -25,7 +38,7 @@ export const JobFilter: React.FC<JobFilterProps> = ({ onFilter }) => {
   };
 
   const handleReset = () => {
-    reset();
+    reset({ keyword: '', location: '', category: '' });
     onFilter({ keyword: '', location: '', category: '' });
   };
 
@@ -39,30 +52,32 @@ export const JobFilter: React.FC<JobFilterProps> = ({ onFilter }) => {
         <InputField
           label="Kata Kunci"
           id="keyword"
-          placeholder="Judul, perusahaan..."
+          placeholder="Judul, skill (e.g., React, Go)..."
           {...register('keyword')}
         />
         <InputField
           label="Lokasi"
           id="location"
-          placeholder="Jakarta, Bandung..."
+          placeholder="Jakarta, Bandung, Remote..."
           {...register('location')}
         />
         
         <div>
           <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-1">
-            Kategori
+            Kategori IT
           </label>
           <select
             id="category"
             {...register('category')}
-            className="w-full h-10 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+            className="w-full h-10 px-3 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
           >
+            {/* 2. Gunakan .map() untuk membuat daftar option secara dinamis */}
             <option value="">Semua Kategori</option>
-            <option value="Teknologi">Teknologi</option>
-            <option value="Pemasaran">Pemasaran</option>
-            <option value="Desain">Desain</option>
-            <option value="Penjualan">Penjualan</option>
+            {itJobCategories.map((category) => (
+              <option key={category.value} value={category.value}>
+                {category.label}
+              </option>
+            ))}
           </select>
         </div>
 
