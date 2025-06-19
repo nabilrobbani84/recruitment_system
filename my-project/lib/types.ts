@@ -1,4 +1,22 @@
 // src/lib/types.ts
+export interface BlogPost {
+  id: number | string;
+  slug: string;
+  title: string;
+  content: string; 
+  excerpt: string;
+  imageUrl: string;
+  authorName: string;
+  authorAvatarUrl?: string;
+  category: string;
+  tags: string[];
+  publishedAt: string; // Tanggal publikasi dalam format string ISO 8601
+}
+
+export type TransformedBlogPost = Omit<BlogPost, 'publishedAt'> & {
+  publishedAt: Date;
+  readingTimeMinutes?: number; 
+};
 
 // Tipe untuk Pekerjaan
 export interface Job {
