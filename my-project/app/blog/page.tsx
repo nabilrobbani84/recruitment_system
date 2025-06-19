@@ -1,76 +1,61 @@
 // src/app/blog/page.tsx
 
 import { blogService } from '@/services/blogService';
-import { BlogCard } from '@/component/blog/blogCard';
-import { BlogCategories } from '@/component/blog/blogCategories';
-import { SearchBar } from '@/component/common/SearchBar';
-import { Pagination } from '@/component/common/Pagination';
+// 1. PERBAIKAN: Path dan nama file impor telah dikoreksi
+import { FeaturedBlogCard } from '@/component/blog/FeaturedBlogCard';
+import { BlogCard } from '@/component/blog/blogCard'; 
 import { SectionTitle } from '@/component/common/SectionTitle';
+import { TransformedBlogPost } from '@/services/blogService'; // Impor tipe jika perlu
 
-interface BlogPageProps {
-  searchParams: {
-    page?: string;
-    category?: string;
-    q?: string;
-  };
-}
+export const revalidate = 3600; // Revalidasi halaman setiap 1 jam
 
-export default async function BlogPage({ searchParams }: BlogPageProps) {
-  const page = Number(searchParams.page) || 1;
-  const category = searchParams.category;
-  const searchQuery = searchParams.q;
+export default async function BlogPage() {
+  // Ambil 7 postingan terbaru: 1 untuk unggulan, 6 untuk grid
+  const postsData = await blogService.getPosts({ page: 1, limit: 7 });
+  const allPosts = postsData.posts;
 
-  // Ambil data postingan dan kategori secara bersamaan
-  const [postsData, categories] = await Promise.all([
-    blogService.getPosts({
-      page,
-      limit: 6, // Tampilkan 6 postingan per halaman
-      category,
-      searchQuery,
-    }),
-    blogService.getCategories(),
-  ]);
-
-  const { posts, totalPages, currentPage } = postsData;
+  const featuredPost: TransformedBlogPost | null = allPosts.length > 0 ? allPosts[0] : null;
+  const regularPosts: TransformedBlogPost[] = allPosts.length > 1 ? allPosts.slice(1) : [];
 
   return (
-    <main className="bg-gray-50">
-      <div className="container mx-auto px-4 py-12 md:py-16">
+    <main className="bg-white">
+      <div className="container mx-auto px-4 py-16 md:py-24">
         <SectionTitle
           align="center"
-          title="Blog & Wawasan Karir"
-          subtitle="Dapatkan tips terbaru seputar pengembangan karir, wawancara, dan dunia kerja dari para ahli."
+          title="From the blog"
+          subtitle="Wawasan, berita, dan saran terbaru dari tim kami untuk membantu perjalanan karir Anda."
         />
 
-        {/* Layout Utama: Grid 2 Kolom */}
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 mt-12">
-          
-          {/* Kolom Sidebar (muncul di atas pada layar mobile) */}
-          <aside className="lg:col-span-1 space-y-8 lg:sticky lg:top-24 h-fit">
-            <SearchBar placeholder="Cari artikel..." basePath="/blog" />
-            <BlogCategories categories={categories} />
-          </aside>
-
-          {/* Kolom Utama (Daftar Postingan) */}
-          <div className="lg:col-span-3">
-            {posts.length > 0 ? (
-              <>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {posts.map(post => (
-                    // @ts-ignore - Mengasumsikan `post` sudah ditransformasi oleh service
-                    <BlogCard key={post.id} post={post} />
-                  ))}
-                </div>
-                <Pagination totalPages={totalPages} currentPage={currentPage} />
-              </>
-            ) : (
-              <div className="text-center py-20 bg-white rounded-xl border border-gray-200">
-                <h3 className="text-2xl font-bold text-gray-800">Artikel Tidak Ditemukan</h3>
-                <p className="text-gray-500 mt-2">Coba gunakan kata kunci atau filter kategori yang lain.</p>
-              </div>
-            )}
+        {/* Bagian Artikel Unggulan */}
+        {featuredPost && (
+          <div className="mt-12 mb-16 md:mb-24">
+            {/* 2. PERBAIKAN: @ts-ignore dihapus karena tipe data sudah benar */}
+            <FeaturedBlogCard post={featuredPost} />
           </div>
-        </div>
+        )}
+
+        {/* Garis Pemisah jika ada kedua bagian */}
+        {featuredPost && regularPosts.length > 0 && <hr className="border-gray-200" />}
+
+        {/* Bagian Grid Artikel Lainnya */}
+        {regularPosts.length > 0 && (
+          <div className="mt-16 md:mt-24">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-16">
+              {regularPosts.map((post) => (
+                 // 3. PERBAIKAN: @ts-ignore dihapus
+                <BlogCard key={post.id} post={post} />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Kondisi jika tidak ada artikel sama sekali */}
+        {allPosts.length === 0 && (
+            <div className="text-center py-20 bg-gray-50 rounded-lg">
+                <h3 className="text-2xl font-bold text-gray-800">Belum Ada Artikel</h3>
+                <p className="text-gray-500 mt-2">Silakan cek kembali nanti untuk wawasan terbaru dari kami.</p>
+            </div>
+        )}
       </div>
     </main>
   );
