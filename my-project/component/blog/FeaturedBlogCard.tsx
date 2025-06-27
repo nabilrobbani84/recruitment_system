@@ -2,10 +2,13 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { BlogPost } from '@/lib/types';
-import { TransformedBlogPost } from '@/services/blogService'; // Asumsi tipe diekspor dari service
+import { TransformedBlogPost } from '@/services/blogService'; // Asumsi tipe ini diekspor dari service
 
-export function FeaturedBlogCard({ post }: { post: TransformedBlogPost }) {
+interface FeaturedBlogCardProps {
+  post: TransformedBlogPost;
+}
+
+export function FeaturedBlogCard({ post }: FeaturedBlogCardProps) {
   return (
     <article className="group grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
       <Link href={`/blog/${post.slug}`} className="block relative w-full h-80 lg:h-96 rounded-2xl overflow-hidden shadow-lg">
@@ -15,7 +18,7 @@ export function FeaturedBlogCard({ post }: { post: TransformedBlogPost }) {
           fill
           style={{ objectFit: 'cover' }}
           className="transition-transform duration-500 group-hover:scale-105"
-          priority
+          priority // Prioritaskan pemuatan gambar utama ini
         />
       </Link>
       <div className="flex flex-col">
@@ -31,7 +34,7 @@ export function FeaturedBlogCard({ post }: { post: TransformedBlogPost }) {
         <div className="mt-6 flex items-center gap-4">
           <Image
             className="h-12 w-12 rounded-full"
-            src={post.authorAvatarUrl || '/images/default-avatar.png'}
+            src={post.authorAvatarUrl || '/images/default-avatar.png'} // Sediakan gambar fallback
             alt={`Avatar ${post.authorName}`}
             width={48}
             height={48}
