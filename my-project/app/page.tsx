@@ -1,7 +1,7 @@
 import React from 'react';
 import Header from '../component/common/Header';  
 import Footer from '../component/common/Footer'; 
-import JobList from '../component/JobList';
+import JobList from '../component/job/JobList';
 import CompanyMessage from '../component/CompanyMessage';
 import About from './about/page';
 const Page = () => {
