@@ -118,7 +118,8 @@ export default function Header() {
           <div className="h-6 w-px bg-gray-600" />
 
           {/* Kondisi Otentikasi */}
-          {isAuthenticated() && user ? (
+          {/* PERBAIKAN 1: Hapus tanda kurung () dari isAuthenticated */}
+          {isAuthenticated && user ? (
             <div className="relative" ref={profileRef}>
               <button onClick={() => setActiveDropdown(activeDropdown === 'profile' ? null : 'profile')} className="flex items-center gap-2 hover:bg-gray-700 p-1.5 rounded-full transition-colors">
                 <span className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-sm font-bold">{user.name.charAt(0)}</span>
@@ -160,16 +161,17 @@ export default function Header() {
             ))}
             {/* Tambahkan link lain untuk mobile di sini */}
             <div className="mt-4 border-t border-gray-700 pt-4">
-               {isAuthenticated() && user ? (
-                 <div>
-                    <p className='px-3 text-sm text-gray-400'>Masuk sebagai {user.name}</p>
-                    <button onClick={handleLogout} className="flex items-center gap-2 w-full mt-2 px-3 py-2 text-sm text-red-400 hover:bg-red-500 hover:text-white rounded"><LogOut size={16}/>Keluar</button>
-                 </div>
-               ) : (
-                <Link href="/login" onClick={() => setIsMenuOpen(false)} className="bg-blue-600 text-white w-full block text-center py-2 rounded-md text-sm font-semibold hover:bg-blue-700 transition-colors">
+              {/* PERBAIKAN 2: Hapus tanda kurung () dari isAuthenticated */}
+              {isAuthenticated && user ? (
+                <div>
+                  <p className='px-3 text-sm text-gray-400'>Masuk sebagai {user.name}</p>
+                  <button onClick={handleLogout} className="flex items-center gap-2 w-full mt-2 px-3 py-2 text-sm text-red-400 hover:bg-red-500 hover:text-white rounded"><LogOut size={16}/>Keluar</button>
+                </div>
+              ) : (
+               <Link href="/login" onClick={() => setIsMenuOpen(false)} className="bg-blue-600 text-white w-full block text-center py-2 rounded-md text-sm font-semibold hover:bg-blue-700 transition-colors">
                   Masuk
-                </Link>
-               )}
+               </Link>
+              )}
             </div>
           </nav>
         </div>
