@@ -1,33 +1,33 @@
-// src/components/common/InputField.tsx
+'use client';
 
 import React, { InputHTMLAttributes } from 'react';
 import { cva } from 'class-variance-authority';
 
-// --- Definisi Varian Input (Tidak ada perubahan) ---
 const inputStyles = cva(
-  'flex h-10 w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
+  'flex h-10 w-full rounded-md border border-gray-300 bg-transparent py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50',
   {
     variants: {
       hasError: {
-        true: 'border-red-500 focus:ring-red-500',
+        true: 'border-red-500 focus-visible:ring-red-500',
       },
+      hasIcon: {
+        true: 'pl-10',
+      }
     },
   }
 );
 
-// --- Tipe Props ---
 export interface InputFieldProps extends InputHTMLAttributes<HTMLInputElement> {
   label: string;
+  name: string;
   error?: string;
-  // FIX: Tipe diubah menjadi lebih spesifik untuk memastikan elemen bisa menerima className.
-  icon?: React.ReactElement<{ className?: string }>;
+  Icon?: React.ElementType; // Menggunakan ElementType agar lebih fleksibel
   containerClassName?: string;
 }
 
-// --- Komponen ---
 const InputField = React.forwardRef<HTMLInputElement, InputFieldProps>(
-  ({ className, label, id, error, icon, containerClassName, ...props }, ref) => {
-    const inputId = id || props.name; // Gunakan id atau name untuk htmlFor
+  ({ className, label, id, error, Icon, containerClassName, ...props }, ref) => {
+    const inputId = id || props.name;
 
     return (
       <div className={`w-full ${containerClassName || ''}`}>
@@ -35,19 +35,14 @@ const InputField = React.forwardRef<HTMLInputElement, InputFieldProps>(
           {label}
         </label>
         <div className="relative">
-          {/* FIX: Ditambahkan pengecekan React.isValidElement sebagai best practice */}
-          {React.isValidElement(icon) && (
+          {Icon && (
             <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-              {/* FIX: Casting 'as' tidak lagi diperlukan karena tipe sudah benar */}
-              {React.cloneElement(icon, {
-                className: 'h-5 w-5 text-gray-400',
-              })}
+               <Icon className="h-5 w-5 text-gray-400" aria-hidden="true" />
             </div>
           )}
           <input
             id={inputId}
-            // FIX: Pastikan className dari props selalu ada untuk mencegah 'undefined'
-            className={inputStyles({ hasError: !!error, className: `${icon ? 'pl-10' : ''} ${className || ''}` })}
+            className={inputStyles({ hasError: !!error, hasIcon: !!Icon, className })}
             ref={ref}
             {...props}
           />
