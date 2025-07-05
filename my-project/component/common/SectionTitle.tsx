@@ -1,33 +1,32 @@
 import React from 'react';
+import { cn } from '@/lib/utils';
 
 interface SectionTitleProps {
   title: string;
   subtitle?: string;
-  className?: string;
   align?: 'left' | 'center' | 'right';
+  className?: string;
 }
 
-const SectionTitle: React.FC<SectionTitleProps> = ({
-  title,
-  subtitle,
-  className,
-  align = 'left',
-}) => {
-  const alignmentClass = {
+export const SectionTitle = ({ title, subtitle, align = 'center', className }: SectionTitleProps) => {
+  const textAlignClass = {
     left: 'text-left',
     center: 'text-center',
     right: 'text-right',
   };
 
+  const marginAutoClass = align === 'center' ? 'mx-auto' : '';
+
   return (
-    <div className={`${alignmentClass[align]} ${className}`}>
-      <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">{title}</h2>
+    <div className={cn(textAlignClass[align], className)}>
+      <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
+        {title}
+      </h2>
       {subtitle && (
-        <p className="mt-2 text-lg leading-8 text-gray-600">{subtitle}</p>
+        <p className={cn("mt-4 max-w-3xl text-lg text-gray-600 dark:text-gray-400", marginAutoClass)}>
+          {subtitle}
+        </p>
       )}
-      <div className={`mt-4 h-1 w-20 ${align === 'center' ? 'mx-auto' : ''} ${align === 'right' ? 'ml-auto' : ''} bg-blue-600 rounded`}></div>
     </div>
   );
 };
-
-export { SectionTitle };
