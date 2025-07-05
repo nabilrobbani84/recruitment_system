@@ -1,8 +1,9 @@
+'use client';
+
 import React from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
-import { Loader2 } from 'lucide-react'; // Ikon untuk loading
+import { Loader2 } from 'lucide-react';
 
-// --- Definisi Varian Tombol ---
 const buttonVariants = cva(
   'inline-flex items-center justify-center rounded-lg font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none',
   {
@@ -27,21 +28,19 @@ const buttonVariants = cva(
   }
 );
 
-// --- Tipe Props ---
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof buttonVariants> {
   isLoading?: boolean;
 }
 
-// --- Komponen ---
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, children, isLoading, ...props }, ref) => {
+  ({ className, variant, size, children, isLoading, disabled, ...props }, ref) => {
     return (
       <button
         className={buttonVariants({ variant, size, className })}
         ref={ref}
-        disabled={isLoading}
+        disabled={isLoading || disabled}
         {...props}
       >
         {isLoading ? (
