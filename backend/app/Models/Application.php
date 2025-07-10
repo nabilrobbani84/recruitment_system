@@ -1,31 +1,25 @@
 <?php
+
 namespace App\Models;
 
+use App\Enums\ApplicationStatus;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Application extends Model
 {
-    protected $table = 'applications';
-    protected $primaryKey = 'application_id';
-    public $incrementing = false;
-    protected $fillable = [
-        'candidate_id',
-        'job_id',
-        'application_date',
-        'status',
-    ];
-    public $timestamps = false;
+    protected $fillable = ['job_id', 'candidate_id', 'status', 'cover_letter', 'resume_path'];
 
-    // Relationship with Candidate
-    public function candidate(): BelongsTo
+    protected $casts = [
+        'status' => ApplicationStatus::class,
+    ];
+    
+    public function job()
     {
-        return $this->belongsTo(Candidate::class, 'candidate_id', 'candidate_id');
+        return $this->belongsTo(Job::class);
     }
 
-    // Relationship with Job
-    public function job(): BelongsTo
+    public function candidate()
     {
-        return $this->belongsTo(Job::class, 'job_id', 'job_id');
+        return $this->belongsTo(User::class, 'candidate_id');
     }
 }
