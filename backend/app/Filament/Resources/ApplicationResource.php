@@ -12,112 +12,46 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Select;
-use Filament\Tables\Columns\TextColumn;
 
 class ApplicationResource extends Resource
 {
     protected static ?string $model = Application::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-    protected static ?string $navigationLabel = 'Applications';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                TextInput::make('candidate_id')
-                    ->label('Candidate ID')
-                    ->required()
-                    ->placeholder('Enter candidate ID')
-                    ->maxLength(255),
-                
-                Select::make('job_id')
-                    ->label('Job Position')
-                    ->options([
-                        '1' => 'Software Developer',
-                        '2' => 'Marketing Specialist',
-                        '3' => 'HR Manager',
-                        '4' => 'UI/UX Designer',
-                    ])
-                    ->required()
-                    ->placeholder('Select job position'),
-
-                DatePicker::make('application_date')
-                    ->label('Application Date')
-                    ->required()
-                    ->default(now()),
-
-                Select::make('status')
-                    ->label('Status')
-                    ->options([
-                        'pending' => 'Pending',
-                        'accepted' => 'Accepted',
-                        'rejected' => 'Rejected',
-                    ])
-                    ->required()
-                    ->default('pending'),
+                //
             ]);
     }
 
     public static function table(Table $table): Table
-{
-    return $table
-        ->columns([
-            TextColumn::make('application_id')
-                ->label('Application ID')
-                ->sortable()
-                ->searchable(),
-            
-            TextColumn::make('candidate_id')
-                ->label('Candidate ID')
-                ->sortable()
-                ->searchable(),
-            
-            TextColumn::make('job_id')
-                ->label('Job Position')
-                ->sortable()
-                ->searchable(),
-            
-            TextColumn::make('application_date') // Use TextColumn for dates
-                ->label('Application Date')
-                ->sortable()
-                ->formatStateUsing(fn ($state) => \Carbon\Carbon::parse($state)->toFormattedDateString()), // Format the date nicely
-            
-            TextColumn::make('status')
-                ->label('Status')
-                ->sortable()
-                ->searchable(), 
-        ])
-        ->filters([
-            // Filters can be added here if necessary
-        ])
-        ->actions([
-            Tables\Actions\EditAction::make(),
-            Tables\Actions\ViewAction::make(),
-        ])
-        ->bulkActions([
-            Tables\Actions\BulkActionGroup::make([
-                Tables\Actions\DeleteBulkAction::make(),
-            ]),
-        ]);
-}
-
-    public static function getRelations(): array
     {
-        return [
-            // You can define relations here if needed, for example, with candidates or jobs.
-        ];
+        return $table
+            ->columns([
+                //
+            ])
+            ->filters([
+                //
+            ])
+            ->actions([
+                Tables\Actions\ViewAction::make(),
+                Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
+            ])
+            ->bulkActions([
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\DeleteBulkAction::make(),
+                ]),
+            ]);
     }
 
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListApplications::route('/'),
-            'create' => Pages\CreateApplication::route('/create'),
-            'edit' => Pages\EditApplication::route('/{record}/edit'),
+            'index' => Pages\ManageApplications::route('/'),
         ];
     }
 }
